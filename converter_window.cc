@@ -1,8 +1,6 @@
 #include "converter_window.h"
 #include <iostream>
 
-// TODO: Fix all variables in camelcase! Just use underscores.
-
 ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade)
 : Gtk::ApplicationWindow(c_object),
   glade(ref_glade),
@@ -23,13 +21,21 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
 
   int title_index = tree_view->append_column_editable("Chapter Title", tree_model->columns.title);
   tree_view->append_column("File Name", tree_model->columns.file_name);
-  tree_view->append_column("Length", tree_model->columns.length);
+  int length_index = tree_view->append_column("Length", tree_model->columns.length);
 
   // ensure only rows that are chapters can have title edited
   title_index -= 1;
   Gtk::TreeViewColumn* title_column = tree_view->get_column(title_index);
   Gtk::CellRenderer* title_cell_renderer = tree_view->get_column_cell_renderer(title_index);
   title_column->add_attribute(*title_cell_renderer, "editable", tree_model->columns.chapter);
+
+  // Ensure n.o. seconds in length renders as a time
+  length_index -= 1;
+  Gtk::TreeViewColumn* length_column = tree_view->get_column(length_index);
+  Gtk::CellRenderer* length_cell_renderer = tree_view->get_column_cell_renderer(length_index);
+  length_column->set_cell_data_func(
+    *length_cell_renderer,
+    sigc::mem_fun(*this, &ConverterWindow::on_set_cell_length) );
 
   show_all();
 }
@@ -97,5 +103,23 @@ void ConverterWindow::on_convert() {
       std::cout << " " << files[j].get_value(tree_model->columns.file_name);
       std::cout << " " << files[j].get_value(tree_model->columns.length) << std::endl;
     }
+  }
+}
+
+void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter) {
+  if (iter) {
+    int seconds, hours, minutes;
+    seconds = iter->get_value(tree_model->columns.length);
+    minutes = seconds / 60;
+    hours = minutes / 60;
+
+    // max int is 2147483647, so max time is 596523:14:07
+    char buffer[15];
+    sprintf(buffer, "%02d:%02d:%02d",
+            hours, int(minutes % 60), int(seconds % 60));
+    
+    Glib::ustring view_text = buffer;
+    Gtk::CellRendererText* text_renderer = static_cast<Gtk::CellRendererText*>(renderer);
+    text_renderer->property_text() = view_text;
   }
 }

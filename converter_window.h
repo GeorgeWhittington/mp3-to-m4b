@@ -15,6 +15,7 @@ class ConverterWindow : public Gtk::ApplicationWindow {
     void on_add_file();
     void on_remove_row();
     void on_convert();
+    void on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter);
 
     Gtk::TreeModel::Row add_chapter();
 

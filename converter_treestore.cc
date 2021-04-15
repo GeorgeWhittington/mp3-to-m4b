@@ -50,3 +50,5 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
 
   return Gtk::TreeStore::row_drop_possible_vfunc(dest, selection_data);
 }
+
+// handlers for row change and row delete to keep chapter length up to date
