@@ -56,3 +56,6 @@ long long int get_audio_duration(std::string filename) {
     return timestamp.timestamp();
   }
 }
+
+// Write another function that finds *exact* duration,
+// for chapter length purposes. 

@@ -170,6 +170,13 @@ void ConverterWindow::on_convert() {
       std::cout << " " << files[j].get_value(tree_model->columns.length) << std::endl;
     }
   }
+
+  // create worker thread (std::thread), communicate with it via Glib::Dispatcher
+  // inside worker thread, begin external ffmpeg and then AtomicParsley processes
+  // (will have to decide if boost::processes is still worth using for cleanliness's sake)
+  // have a dialog with a spinner in it and a cancel button. maybe have a bit more communication
+  // so we can track what step stuff is on? (find actual file durations, run ffmpeg, run atomicparsley)
+  // merge worker thread back in on cancel/failure/success
 }
 
 void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter) {

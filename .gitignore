@@ -6,5 +6,7 @@
 **/.DS_Store
 **/*.mp3
 **/*.wav
+**/*.m4b
+fiddling/**/*.png
 .vscode
 **/*.code-workspace

@@ -136,14 +136,10 @@ int TranscodeContext::open_output_file(std::string filename) {
 
   std::error_code err;
 
-  av::guessOutputFormat("", "m4b", "");
+  av::OutputFormat output_format("", "m4b", "");
+  output_format_ctx.setFormat(output_format);
 
   av::Codec output_codec = av::findEncodingCodec(AV_CODEC_ID_AAC);
-  if (output_codec.canEncode()) {
-    // Will have to see if this is enough of a check?
-    std::cerr << "Encoder fetched cannot encode" << std::endl;
-    return -1;
-  }
 
   auto out_stream = output_format_ctx.addStream(output_codec, err);
   if (err) {
@@ -165,10 +161,17 @@ int TranscodeContext::open_output_file(std::string filename) {
 
   encode_ctx.setStrict(FF_COMPLIANCE_EXPERIMENTAL);
 
-  encode_ctx.setTimeBase(av::Rational(decode_ctx.sampleRate(), 1));
+  encode_ctx.setTimeBase(av::Rational(1, decode_ctx.sampleRate()));
 
   if (output_format_ctx.outputFormat().flags() & AVFMT_GLOBALHEADER) {
     encode_ctx.setFlags2(encode_ctx.flags() || AV_CODEC_FLAG_GLOBAL_HEADER);
+  }
+
+  // open output file itself
+  output_format_ctx.openOutput(filename, err);
+  if (err) {
+    std::cerr << "Could not open output file: " << filename << std::endl;
+    return -1;
   }
 
   encode_ctx.open(err);
@@ -184,13 +187,6 @@ int TranscodeContext::open_output_file(std::string filename) {
   }
 
   out_stream.setTimeBase(encode_ctx.timeBase());
-
-  // open output file itself
-  output_format_ctx.openOutput(filename, err);
-  if (err) {
-    std::cerr << "Could not open output file: " << filename << std::endl;
-    return -1;
-  }
 
   // Need to add chapter data to context HERE
 
@@ -241,6 +237,7 @@ int TranscodeContext::init_filters() {
     std::cerr << "Cannot create audio buffer source" << std::endl;
     return -1;
   }
+
   filter_sink_ctx = filter_graph.createFilter(buffer_sink, "out", "", err);
   if (err) {
     std::cerr << "Cannot create audio buffer sink" << std::endl;
@@ -249,15 +246,20 @@ int TranscodeContext::init_filters() {
 
   // Might need to do filter_graph.allocFilter() here? Will see.
 
+  // av_opt_set_bin causes a seg fault. Will need to learn more lldb
+  // to figure out why, hahahaha
+
   // Set options on base C filter sink context obj
   // I think the orig code does this so it can support many
   // kinds of output? But since we're only going to ever export
   // aac wrapped in m4b, mayyyybe this could be squashed? Try later.
   // Hopefully this can just get shifted to the args input when
   // creating the filter sink context.
+
+#if 0
   int status;
   status = av_opt_set_bin(filter_sink_ctx.raw(), "sample_fmts",
-    (uint8_t*)encode_ctx.sampleFormat().get(), sizeof(encode_ctx.sampleFormat().get()),
+    (uint8_t*)encode_ctx.raw()->sample_fmt, sizeof(encode_ctx.raw()->sample_fmt),
     AV_OPT_SEARCH_CHILDREN);
   if (status < 0) {
     std::cerr << "Cannot set output sample format" << std::endl;
@@ -279,15 +281,18 @@ int TranscodeContext::init_filters() {
     std::cerr << "Cannot set output channel sample rate" << std::endl;
     return -1;
   }
+#endif
 
   // "anull" is the passthrough filter for audio
   filter_graph.parse("anull", filter_src_ctx, filter_src_ctx, err);
   if (err) {
+    std::cerr << "Error parsing filter graph " << err << ", " << err.message() << std::endl;
     return -1;
   }
 
   filter_graph.config(err);
   if (err) {
+    std::cerr << "Error configuring filter graph" << std::endl;
     return -1;
   }
 
@@ -308,10 +313,10 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
     return -1;
   }
 
-  status = init_filters();
-  if (status < 0) {
-    return -1;
-  }
+  // status = init_filters();
+  // if (status < 0) {
+  //   return -1;
+  // }
 
   av::AudioResampler resampler(
     encode_ctx.channelLayout(), encode_ctx.sampleRate(), encode_ctx.sampleFormat(),
@@ -324,10 +329,12 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
       break;
     } else if (!packet) {
       // EOF
+      std::clog << "End of file reached" << std::endl;
       break;
     }
       
     if (packet.streamIndex() != audio_stream_ind)
+      std::clog << "Packet read from non-audio stream, skipped" << std::endl;
       continue;
     
 #if 1
@@ -342,6 +349,14 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
       std::cerr << "Error decoding packet" << std::endl;
       return -1;
     }
+
+    std::clog << "  Samples [in]: " << samples.samplesCount()
+         << ", ch: " << samples.channelsCount()
+         << ", freq: " << samples.sampleRate()
+         << ", name: " << samples.channelsLayoutString()
+         << ", pts: " << samples.pts().seconds()
+         << ", ref=" << samples.isReferenced() << ":" << samples.refCount()
+         << std::endl;
 
     if (samples) {
       resampler.push(samples, err);
@@ -359,9 +374,18 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
       
       bool has_frame = resampler.pop(output_samples, get_all, err);
       if (err) {
+        std::clog << "Resampling status: " << err << ", text: " << err.message() << std::endl;
         break;
       } else if (!has_frame) {
         break;
+      } else {
+        std::clog << "  Samples [ou]: " << output_samples.samplesCount()
+             << ", ch: " << output_samples.channelsCount()
+             << ", freq: " << output_samples.sampleRate()
+             << ", name: " << output_samples.channelsLayoutString()
+             << ", pts: " << output_samples.pts().seconds()
+             << ", ref=" << output_samples.isReferenced() << ":" << output_samples.refCount()
+             << std::endl;
       }
 
       output_samples.setStreamIndex(0);
@@ -372,10 +396,23 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
         std::cerr << "Encoding error" << std::endl;
         return -1;
       } else if (!output_packet) {
+        std::clog << "Empty packet" << std::endl;
         continue;
       }
 
       output_packet.setStreamIndex(0);
+
+      std::clog << "Write packet: pts=" 
+                << output_packet.pts()
+                << ", dts=" << output_packet.dts() 
+                << " / " 
+                << output_packet.pts().seconds() 
+                << " / " 
+                << output_packet.timeBase() 
+                << " / st: " 
+                << output_packet.streamIndex() 
+                << std::endl;
+
       output_format_ctx.writePacket(output_packet, err);
       if (err) {
         std::cerr << "Error writing packet" << std::endl;
@@ -399,10 +436,12 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
     }
 #endif
   if (!packet && !samples)
+    std::clog << "No packet, no samples" << std::endl;
     break;
   }
 
   // Flush encoder
+  std::clog << "Flush encoder" << std::endl;
   while (true) {
     av::AudioSamples null(nullptr);
     av::Packet output_packet = encode_ctx.encode(null, err);
@@ -418,7 +457,11 @@ int TranscodeContext::transcode(std::string input_filename, std::string output_f
   }
 
   output_format_ctx.flush();
-  output_format_ctx.writeTrailer();
+  output_format_ctx.writeTrailer(err);
+  if (err) {
+    std::cerr << "error writing trailer" << std::endl;
+    return -1;
+  }
 }
 
 int main(int argc, char **argv) {
