@@ -1,4 +1,5 @@
 #include "converter_window.h"
+#include "get_duration.h"
 #include <iostream>
 
 ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade)
@@ -57,6 +58,35 @@ Gtk::TreeModel::Row ConverterWindow::add_chapter() {
 
 void ConverterWindow::on_add_file() {
   // filepicker, analyse mp3's for length
+  std::string filename;
+  int length;
+  
+  Gtk::FileChooserDialog dialog("Please choose an mp3", Gtk::FILE_CHOOSER_ACTION_OPEN);
+  dialog.set_transient_for(*this);
+
+  dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+  dialog.add_button("_Open", Gtk::RESPONSE_OK);
+
+  auto filter_audio = Gtk::FileFilter::create();
+  filter_audio->set_name("MP3 files");
+  filter_audio->add_pattern("*.mp3");
+  dialog.add_filter(filter_audio);
+
+  int result = dialog.run();
+
+  switch (result) {
+    case (Gtk::RESPONSE_OK): {
+      filename = dialog.get_filename();
+      // std::cout << "File selected: " << filename << std::endl;
+      const char *filename_c = filename.c_str();
+      length = get_audio_duration(filename_c);
+      // std::cout << "File duration (in seconds): " << length << std::endl;
+      break;
+    }
+    default: {
+      return;
+    }
+  }
 
   auto selection = tree_view->get_selection();
   auto row = selection->get_selected();
@@ -65,10 +95,11 @@ void ConverterWindow::on_add_file() {
   if (row) {
     bool chapter = row->get_value(tree_model->columns.chapter);
     if (chapter) {
+
       Gtk::TreeModel::Row file_row = *(tree_model->append(row->children()));
       file_row[tree_model->columns.chapter] = false;
-      file_row[tree_model->columns.file_name] = "chapter_one.mp3";
-      file_row[tree_model->columns.length] = 130;
+      file_row[tree_model->columns.file_name] = filename;
+      file_row[tree_model->columns.length] = length;
       return;
     }
   }
@@ -77,8 +108,8 @@ void ConverterWindow::on_add_file() {
   auto chapter = add_chapter();
   Gtk::TreeModel::Row file_row = *(tree_model->append(chapter.children()));
   file_row[tree_model->columns.chapter] = false;
-  file_row[tree_model->columns.file_name] = "chapter_one.mp3";
-  file_row[tree_model->columns.length] = 130;
+  file_row[tree_model->columns.file_name] = filename;
+  file_row[tree_model->columns.length] = length;
 }
 
 void ConverterWindow::on_remove_row() {
