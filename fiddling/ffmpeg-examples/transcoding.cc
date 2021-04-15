@@ -1,15 +1,32 @@
 #include <avcpp/formatcontext.h>
 #include <avcpp/codeccontext.h>
 #include <avcpp/av.h>
+// it's cause it's a dir up, will prolly still compile
+#include <avcpp/filters/filtercontext.h>
+#include <avcpp/filters/filtergraph.h>
 
 #include <iostream>
+#include <inttypes.h>
 
 // Code to transcode audio files to aac and remux to m4b (mpeg4)
+
+// Rough Process:
+// 1. Open input file
+// 2. Open container (mp3, m4b, wav etc) to expose streams
+// 3. Select a decoder for the codec of the stream wanted
+// 4. Open output file
+// 5. Select an encoder for the output file
+// 6. Specify the output container
+// 7. Write the header of the output file
+// 8. Create a filter to pass the decoded audio from the decoder to the encoder
+// 9. Decode, filter and encode the data, before writing it to the output file
+// 10. Write the trailer of the output file
 
 class TranscodeContext {
   public:
     int open_input_file(std::string filename);
     int open_output_file(std::string filename);
+    int init_filters();
 
   protected:
     av::FormatContext input_format_ctx;
@@ -17,6 +34,10 @@ class TranscodeContext {
 
     av::AudioDecoderContext decode_ctx;
     av::AudioEncoderContext encode_ctx;
+
+    av::FilterContext filter_src_ctx;
+    av::FilterContext filter_sink_ctx;
+    av::FilterGraph filter_graph;
 };
 
 bool has_ending(std::string const &full_string, std::string const &ending) {
@@ -153,9 +174,6 @@ int TranscodeContext::open_output_file(std::string filename) {
 
   out_stream.setTimeBase(encode_ctx.timeBase());
 
-  // log
-  av_dump_format(output_format_ctx.raw(), 0, filename.c_str(), 1);
-
   // open output file itself
   output_format_ctx.openOutput(filename, err);
   if (err) {
@@ -165,10 +183,96 @@ int TranscodeContext::open_output_file(std::string filename) {
 
   // Need to add chapter data to context HERE
 
+  // log with av_dump_format
+  output_format_ctx.dump();
+
   // Init muxer by writing header to output
   output_format_ctx.writeHeader(err);
   if (err) {
     std::cerr << "Error occured writing header to output file" << std::endl;
+    return -1;
+  }
+  output_format_ctx.flush();
+}
+
+// Create the filter graph, each of it's filter contexts and their attached filters
+int TranscodeContext::init_filters() {
+  std::error_code err;
+
+  // check if this gets set for me by avcpp, it could be
+  if (!decode_ctx.channelLayout()) {
+    decode_ctx.setChannelLayout(
+      av_get_default_channel_layout(decode_ctx.channels()) );
+  }
+
+  av::Filter buffer_src("abuffer");
+  av::Filter buffer_sink("abuffersink");
+  if (buffer_src.isNull() && buffer_sink.isNull()) {
+    std::cerr << "Filtering source or sink element not found" << std::endl;
+    return -1;
+  }
+
+  char args[512];
+  snprintf(args, sizeof(args),
+          "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%" PRIx64,
+          decode_ctx.timeBase().getNumerator(),
+          decode_ctx.timeBase().getDenominator(),
+          decode_ctx.sampleRate(),
+          decode_ctx.sampleFormat().name(),
+          decode_ctx.channelLayout());
+    
+  filter_src_ctx = filter_graph.createFilter(buffer_src, "in", args, err);
+  if (err) {
+    std::cerr << "Cannot create audio buffer source" << std::endl;
+    return -1;
+  }
+  filter_sink_ctx = filter_graph.createFilter(buffer_sink, "out", "", err);
+  if (err) {
+    std::cerr << "Cannot create audio buffer sink" << std::endl;
+    return -1;
+  }
+
+  // Might need to do filter_graph.allocFilter() here? Will see.
+
+  // Set options on base C filter sink context obj
+  // I think the orig code does this so it can support many
+  // kinds of output? But since we're only going to ever export
+  // aac wrapped in m4b, mayyyybe this could be squashed? Try later.
+  // Hopefully this can just get shifted to the args input when
+  // creating the filter sink context.
+  int status;
+  status = av_opt_set_bin(filter_sink_ctx.raw(), "sample_fmts",
+    encode_ctx.sampleFormat().get(), sizeof(encode_ctx.sampleFormat().get()),
+    AV_OPT_SEARCH_CHILDREN);
+  if (status < 0) {
+    std::cerr << "Cannot set output sample format" << std::endl;
+    return -1;
+  }
+
+  status = av_opt_set_bin(filter_sink_ctx.raw(), "channel_layouts",
+    encode_ctx.channelLayout(), sizeof(encode_ctx.channelLayout()),
+    AV_OPT_SEARCH_CHILDREN);
+  if (status < 0) {
+    std::cerr << "Cannot set output channel layout" << std::endl;
+    return -1;
+  }
+
+  status = av_opt_set_bin(filter_sink_ctx.raw(), "sample_rates",
+    encode_ctx.sampleRate(), sizeof(encode_ctx.sampleRate()),
+    AV_OPT_SEARCH_CHILDREN);
+  if (status < 0) {
+    std::cerr << "Cannot set output channel sample rate" << std::endl;
+    return -1;
+  }
+
+  // "anull" is the passthrough filter for audio
+  filter_graph.parse("anull", filter_src_ctx, filter_src_ctx, err);
+  if (err) {
+    return -1;
+  }
+
+  filter_graph.config(err);
+  if (err) {
     return -1;
   }
 }
@@ -198,6 +302,11 @@ int main(int argc, char **argv) {
   }
 
   status = transcode_ctx.open_output_file(output_filename);
+  if (status < 0) {
+    return 1;
+  }
+
+  status = transcode_ctx.init_filters();
   if (status < 0) {
     return 1;
   }
