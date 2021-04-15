@@ -4,19 +4,8 @@ ConverterApplication::ConverterApplication()
 : Gtk::Application("org.george.mp3_to_m4b"),
   glade(Gtk::Builder::create())
 {
-  // If this was going to be built as an installable app, the .glade
-  // files would get smushed into the binary, most of this error
-  // checking could disappear, and it'd therefore be fine to open them here :)
-  try {
-    glade->add_from_file("converter.glade");
-    glade->add_from_file("menu.glade");
-  } catch(const Glib::FileError& ex) {
-    std::cerr << "FileError: " << ex.what() << std::endl;
-  } catch(const Glib::MarkupError& ex) {
-    std::cerr << "MarkupError: " << ex.what() << std::endl;
-  } catch(const Gtk::BuilderError& ex) {
-    std::cerr << "BuilderError: " << ex.what() << std::endl;
-  }
+  glade->add_from_resource("/org/george/mp3_to_m4b/converter.glade");
+  glade->add_from_resource("/org/george/mp3_to_m4b/menu.glade");
 
   Glib::set_application_name("MP3 to M4B Converter");
 }

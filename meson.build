@@ -7,11 +7,18 @@ deps = [
   dependency('libavformat'), dependency('libavfilter'),
   dependency('libavutil')]
 
+gnome = import('gnome')
+
+resources = gnome.compile_resources(
+  'resources', 'resources/resources.xml',
+  source_dir: 'resources')
+
 executable('mp3-to-m4b',
            'main.cc',
            'get_duration.c',
            'converter_window.cc',
            'converter_treestore.cc',
            'converter_application.cc',
-           install : false,
-           dependencies : deps)
+           resources,
+           install: false,
+           dependencies: deps)
