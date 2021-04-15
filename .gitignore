@@ -1,1 +1,6 @@
+# ignore all files without extensions (for removing compiled files from repo)
+*
+!*.*
+!*/
+
 **/.DS_Store
