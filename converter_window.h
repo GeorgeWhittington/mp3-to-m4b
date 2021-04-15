@@ -1,3 +1,4 @@
+#include "converter_treestore.h"
 #include <gtkmm.h>
 
 class ConverterWindow : public Gtk::ApplicationWindow {
@@ -19,23 +20,7 @@ class ConverterWindow : public Gtk::ApplicationWindow {
 
     Glib::RefPtr<Gtk::Builder> glade;
 
-    // Tree model columns
-    class ModelColumns : public Gtk::TreeModel::ColumnRecord {
-      public:
-        ModelColumns() {
-          add(col_title);
-          add(col_file_name);
-          add(col_length);
-        }
-
-        Gtk::TreeModelColumn<Glib::ustring> col_title;
-        Gtk::TreeModelColumn<Glib::ustring> col_file_name;
-        Gtk::TreeModelColumn<Glib::ustring> col_length;
-    };
-
-    ModelColumns columns;
-
     // widgets
     Gtk::TreeView* treeView;
-    Glib::RefPtr<Gtk::TreeStore> treeModel;
+    Glib::RefPtr<ConverterTreeStore> treeModel;
 };
