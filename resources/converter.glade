@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.24"/>
   <object class="GtkApplicationWindow" id="converter_application_window">
-    <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkToolbar">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="toolbar_style">icons</property>
-            <property name="show_arrow">False</property>
+            <property name="can-focus">False</property>
+            <property name="toolbar-style">icons</property>
+            <property name="show-arrow">False</property>
             <child>
               <object class="GtkToolButton" id="tool_chapter">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Add Chapter</property>
-                <property name="action_name">win.add-chapter</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Add Chapter</property>
+                <property name="action-name">win.add-chapter</property>
                 <property name="label" translatable="yes">tool chapter</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-add</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-add</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -36,12 +33,12 @@
             <child>
               <object class="GtkToolButton" id="tool_file">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Add File</property>
-                <property name="action_name">win.add-file</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Add File</property>
+                <property name="action-name">win.add-file</property>
                 <property name="label" translatable="yes">tool file</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-file</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-file</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -51,12 +48,12 @@
             <child>
               <object class="GtkToolButton" id="tool_up">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Move row up</property>
-                <property name="action_name">win.move-up</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Move row up</property>
+                <property name="action-name">win.move-up</property>
                 <property name="label" translatable="yes">tool up</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-go-up</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-go-up</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -66,12 +63,12 @@
             <child>
               <object class="GtkToolButton" id="tool_down">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Move row down</property>
-                <property name="action_name">win.move-down</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Move row down</property>
+                <property name="action-name">win.move-down</property>
                 <property name="label" translatable="yes">tool down</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-go-down</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-go-down</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -81,12 +78,12 @@
             <child>
               <object class="GtkToolButton" id="tool_remove">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Remove a chapter/file</property>
-                <property name="action_name">win.remove-row</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Remove a chapter/file</property>
+                <property name="action-name">win.remove-row</property>
                 <property name="label" translatable="yes">tool remove</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-delete</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-delete</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -96,12 +93,12 @@
             <child>
               <object class="GtkToolButton" id="tool_convert">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Convert selected files to M4B</property>
-                <property name="action_name">win.convert</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Convert selected files to M4B</property>
+                <property name="action-name">win.convert</property>
                 <property name="label" translatable="yes">tool convert</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-yes</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-yes</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -118,30 +115,30 @@
         <child>
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
-            <property name="propagate_natural_width">True</property>
-            <property name="propagate_natural_height">True</property>
+            <property name="can-focus">True</property>
+            <property name="hscrollbar-policy">never</property>
+            <property name="shadow-type">in</property>
+            <property name="propagate-natural-height">True</property>
             <child>
               <object class="GtkViewport">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="shadow_type">none</property>
+                <property name="can-focus">False</property>
+                <property name="shadow-type">none</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_left">5</property>
-                    <property name="margin_right">5</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
-                    <property name="spacing">5</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-left">15</property>
+                    <property name="margin-right">15</property>
+                    <property name="margin-top">15</property>
+                    <property name="margin-bottom">15</property>
+                    <property name="spacing">15</property>
                     <property name="homogeneous">True</property>
                     <child>
                       <object class="GtkTreeView" id="tree_view">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="enable_grid_lines">both</property>
+                        <property name="can-focus">True</property>
+                        <property name="enable-grid-lines">vertical</property>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -153,93 +150,94 @@
                       </packing>
                     </child>
                     <child>
+                      <!-- n-columns=4 n-rows=8 -->
                       <object class="GtkGrid">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="row_spacing">5</property>
-                        <property name="column_spacing">5</property>
-                        <property name="column_homogeneous">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="row-spacing">5</property>
+                        <property name="column-spacing">5</property>
+                        <property name="column-homogeneous">True</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Title</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Author</property>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Year</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Cover Art</property>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkEntry" id="title_entry">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Enter m4b title tag</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">Enter m4b title tag</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
                             <property name="width">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkEntry" id="author_entry">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Enter m4b author tag</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">Enter m4b author tag</property>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">1</property>
                             <property name="width">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkEntry" id="year_entry">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Enter m4b year tag</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">Enter m4b year tag</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">3</property>
                             <property name="width">2</property>
                           </packing>
                         </child>
@@ -247,64 +245,64 @@
                           <object class="GtkButton" id="cover_image_button">
                             <property name="label" translatable="yes">Choose a file</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Choose an image for the m4b cover art</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Choose an image for the m4b cover art</property>
                           </object>
                           <packing>
-                            <property name="left_attach">2</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">3</property>
                             <property name="width">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Comment</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">6</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">6</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkTextView" id="comment_text_view">
-                            <property name="height_request">100</property>
+                            <property name="height-request">100</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Enter m4b comment tag</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">Enter m4b comment tag</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">7</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">7</property>
                             <property name="width">4</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkImage" id="cover_image_display">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Currently selected cover art for m4b</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Currently selected cover art for m4b</property>
                             <property name="stock">gtk-missing-image</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">5</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">5</property>
                             <property name="width">4</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Current Cover Art</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">4</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">4</property>
                             <property name="width">2</property>
                           </packing>
                         </child>

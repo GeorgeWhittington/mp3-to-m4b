@@ -4,5 +4,6 @@
         <file preprocess="xml-stripblanks">menu.glade</file>
         <file preprocess="xml-stripblanks">converter.glade</file>
         <file>logo.svg</file>
+        <file>converter.css</file>
     </gresource>
 </gresources>

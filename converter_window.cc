@@ -40,7 +40,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   tree_view->set_reorderable();
 
   int title_index = tree_view->append_column_editable("Chapter Title", tree_model->columns.title);
-  tree_view->append_column("File Name", tree_model->columns.file_name);
+  int filename_index = tree_view->append_column("File Name", tree_model->columns.file_name);
   int length_index = tree_view->append_column("Length", tree_model->columns.length);
 
   // ensure only rows that are chapters can have title edited
@@ -49,6 +49,21 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   Gtk::CellRenderer* title_cell_renderer = tree_view->get_column_cell_renderer(title_index);
   title_column->add_attribute(*title_cell_renderer, "editable", tree_model->columns.chapter);
 
+  // Adjust chapter title text wrapping
+  title_column->set_sizing(Gtk::TreeViewColumnSizing::TREE_VIEW_COLUMN_AUTOSIZE);
+  Gtk::CellRendererText* title_cell_renderer_text = dynamic_cast<Gtk::CellRendererText*>(title_cell_renderer);
+  title_cell_renderer_text->property_wrap_mode().set_value(Pango::WRAP_WORD_CHAR);
+  title_cell_renderer_text->property_wrap_width().set_value(240);
+
+  // Adjust file name text wrapping
+  filename_index -= 1;
+  Gtk::TreeViewColumn* filename_column = tree_view->get_column(filename_index);
+  filename_column->set_sizing(Gtk::TreeViewColumnSizing::TREE_VIEW_COLUMN_AUTOSIZE);
+  Gtk::CellRendererText* filename_cell_renderer = dynamic_cast<Gtk::CellRendererText*>(
+    tree_view->get_column_cell_renderer(filename_index) );
+  filename_cell_renderer->property_wrap_mode().set_value(Pango::WRAP_WORD_CHAR);
+  filename_cell_renderer->property_wrap_width().set_value(240);
+
   // Ensure n.o. seconds in length renders as a time
   length_index -= 1;
   Gtk::TreeViewColumn* length_column = tree_view->get_column(length_index);
@@ -56,6 +71,8 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   length_column->set_cell_data_func(
     *length_cell_renderer,
     sigc::mem_fun(*this, &ConverterWindow::on_set_cell_length) );
+
+
 
   show_all();
 }
@@ -242,6 +259,14 @@ void ConverterWindow::on_cover_image_button_clicked() {
     Glib::RefPtr<Gdk::Pixbuf> pixbuf;
     try {
       pixbuf = Gdk::Pixbuf::create_from_file(filename);
+
+      int width = pixbuf->get_width();
+      if (width > 500) {
+        std::cout << "scaling down image" << std::endl;
+        // Should scale to fit inside 500x500 dimensions, while preserving aspect ratio
+        pixbuf = Gdk::Pixbuf::create_from_file(filename, 500, 500);
+      }
+
     } catch (const Glib::FileError& ex) {
       std::cerr << "FileError: " << ex.what() << std::endl;
       return;

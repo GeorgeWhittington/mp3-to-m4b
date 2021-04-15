@@ -8,6 +8,19 @@ ConverterApplication::ConverterApplication()
   glade->add_from_resource("/org/george/mp3_to_m4b/menu.glade");
 
   Glib::set_application_name("MP3 to M4B Converter");
+
+  // load css
+  Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
+  css_provider->load_from_resource("/org/george/mp3_to_m4b/converter.css");
+
+  Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
+
+  Glib::RefPtr<Gdk::Screen> screen = Gdk::Screen::get_default();
+
+  // GTK3 defines this, gtkmm's headers are just being weird
+  // #define GTK_STYLE_PROVIDER_PRIORITY_APPLICATION 600
+
+  style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 Glib::RefPtr<ConverterApplication> ConverterApplication::create() {

@@ -1,0 +1,89 @@
+window {
+  background-color: #153D67;
+}
+
+toolbar {
+  background-image: linear-gradient(#153D67, #1D5694);
+}
+
+toolbar button {
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+
+toolbar button:hover {
+  background-color: #1D5694;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  border: 2px solid #2673c5;
+  border-radius: 0;
+}
+
+scrolledwindow {
+  border-style: none;
+}
+
+window label {
+  color: #EBEBEE;
+}
+
+treeview {
+  color: #EBEBEE;
+}
+
+treeview.view {
+  background-color: #1D5694;
+}
+
+treeview.view:selected {
+  background-color: #2673c5;
+  color: black;
+}
+
+treeview.view header button {
+  background-color: #153D67;
+  border-bottom: none;
+}
+
+entry {
+  background-color: #1D5694;
+  color: #EBEBEE;
+  caret-color: #EBEBEE;
+  border-radius: 0;
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+
+entry:selected {
+  border: 2px solid #2673c5;
+}
+
+grid button {
+  background-color: #1D5694;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  border-radius: 0;
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+
+grid button:hover {
+  border: 2px solid #2673c5;
+}
+
+textview.view text {
+  background-color: #1D5694;
+  color: #EBEBEE;
+  caret-color: #EBEBEE;
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+
+textview.view:selected {
+  border: 2px solid #2673c5;
+}
+
+/* TODO:
+1. fix the textview menu, it's white on white rn
+2. figure out adding some internal padding to the textview
+3. change the overshoot gradient thingy colour
+4. sort this file
+*/
