@@ -4,8 +4,8 @@
 class ConverterWindow : public Gtk::ApplicationWindow {
   public:
     ConverterWindow(
-      BaseObjectType* cobject,
-      const Glib::RefPtr<Gtk::Builder>& refGlade
+      BaseObjectType* c_object,
+      const Glib::RefPtr<Gtk::Builder>& ref_glade
     );
     virtual ~ConverterWindow();
   
@@ -20,6 +20,6 @@ class ConverterWindow : public Gtk::ApplicationWindow {
 
     Glib::RefPtr<Gtk::Builder> glade;
 
-    Gtk::TreeView* treeView;
-    Glib::RefPtr<ConverterTreeStore> treeModel;
+    Gtk::TreeView* tree_view;
+    Glib::RefPtr<ConverterTreeStore> tree_model;
 };

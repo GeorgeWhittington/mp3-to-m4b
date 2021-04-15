@@ -39,6 +39,5 @@ void ConverterApplication::create_window() {
     ConverterWindow* window = nullptr;
     glade->get_widget_derived("converter_application_window", window);
     add_window(*window);  // Add window to application
-    // window->show_all();  // Could probably implement in window's constructor
   }
 }
