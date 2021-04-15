@@ -15,6 +15,8 @@ class ConverterWindow : public Gtk::ApplicationWindow {
     // Signal handlers
     void on_add_chapter();
     void on_add_file();
+    void on_move_up();
+    void on_move_down();
     void on_remove_row();
     void on_convert();
     void on_about();

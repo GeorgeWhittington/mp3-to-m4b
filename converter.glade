@@ -49,6 +49,36 @@
               </packing>
             </child>
             <child>
+              <object class="GtkToolButton" id="tool_up">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Move row up</property>
+                <property name="action_name">win.move-up</property>
+                <property name="label" translatable="yes">tool up</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-go-up</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="tool_down">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Move row down</property>
+                <property name="action_name">win.move-down</property>
+                <property name="label" translatable="yes">tool down</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-go-down</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkToolButton" id="tool_remove">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>

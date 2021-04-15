@@ -12,7 +12,7 @@ typedef struct StreamContext {
 } StreamContext;
 static StreamContext *stream_ctx;
 
-int open_input_file(const char *filename, int *duration) {
+int open_input_file(const char *filename, long long int *duration) {
   int ret;
   unsigned int i;
 
@@ -73,13 +73,11 @@ int open_input_file(const char *filename, int *duration) {
   // av_dump_format(input_format_ctx, 0, filename, 0);
 
   // Sourced from av_dump_format:
-  // av_log(NULL, AV_LOG_INFO, "Duration in seconds: ");
+  // av_log(NULL, AV_LOG_INFO, "Duration in microseconds: ");
   if (input_format_ctx->duration != AV_NOPTS_VALUE) {
-    int seconds;
-    int64_t duration_ms = input_format_ctx->duration + (input_format_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
-    seconds = duration_ms / AV_TIME_BASE;
-    // av_log(NULL, AV_LOG_INFO, "%d\n", seconds);
-    *duration = seconds;
+    int64_t duration_microseconds = input_format_ctx->duration + (input_format_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
+    // av_log(NULL, AV_LOG_INFO, "%d\n", duration_microseconds);
+    *duration = (long long int)duration_microseconds;
   } else {
     // av_log(NULL, AV_LOG_INFO, "N/A\n");
     *duration = -1;
@@ -88,8 +86,9 @@ int open_input_file(const char *filename, int *duration) {
   return 0;
 }
 
-int get_audio_duration(const char *filename) {
-  int ret, i, duration;
+long long int get_audio_duration(const char *filename) {
+  long long int duration;
+  int ret, i;
 
   ret = open_input_file(filename, &duration);
 

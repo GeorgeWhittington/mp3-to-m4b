@@ -28,6 +28,8 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   // Set up actions
   add_action("add-chapter", sigc::mem_fun(*this, &ConverterWindow::on_add_chapter));
   add_action("add-file", sigc::mem_fun(*this, &ConverterWindow::on_add_file));
+  add_action("move-up", sigc::mem_fun(*this, &ConverterWindow::on_move_up));
+  add_action("move-down", sigc::mem_fun(*this, &ConverterWindow::on_move_down));
   add_action("remove-row", sigc::mem_fun(*this, &ConverterWindow::on_remove_row));
   add_action("convert", sigc::mem_fun(*this, &ConverterWindow::on_convert));
   add_action("about", sigc::mem_fun(*this, &ConverterWindow::on_about));
@@ -76,7 +78,7 @@ Gtk::TreeModel::Row ConverterWindow::add_chapter() {
 void ConverterWindow::on_add_file() {
   // filepicker, analyse mp3's for length
   std::string filename;
-  int length;
+  long long int length;
   
   Gtk::FileChooserDialog dialog("Please choose an mp3", Gtk::FILE_CHOOSER_ACTION_OPEN);
   dialog.set_transient_for(*this);
@@ -163,21 +165,25 @@ void ConverterWindow::on_convert() {
 void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter) {
   if (iter) {
     Glib::ustring view_text;
-    int seconds, hours, minutes;
-    seconds = iter->get_value(tree_model->columns.length);
+    int microseconds, seconds, minutes, hours;
+    // Length is in microseconds
+    long long int length = iter->get_value(tree_model->columns.length);
 
-    if (seconds == -1) {
+    if (length == -1) {
       view_text = "N/A";
     } else {
+      seconds = length / 1000000;
+      microseconds = length % 1000000;
       minutes = seconds / 60;
+      seconds %= 60;
       hours = minutes / 60;
+      minutes %= 60;
 
-      // TODO: could stand to store ms or ns instead of s
-
-      // max int is 2147483647, so max time is 596523:14:07
-      char buffer[15];
-      sprintf(buffer, "%02d:%02d:%02d",
-            hours, int(minutes % 60), int(seconds % 60));
+      // max long long int is 9,223,372,036,854,775,807
+      // so max time is 2562047788:00:54.775807
+      char buffer[25];
+      sprintf(buffer, "%02d:%02d:%02d.%02d", hours, minutes, seconds,
+              (100 * microseconds) / 1000000);
       view_text = buffer;
     }
 
@@ -269,4 +275,20 @@ void ConverterWindow::on_about() {
   dialog.set_authors(list_authors);
 
   dialog.run();
+}
+
+// do stuff here lol
+
+void ConverterWindow::on_move_up() {
+  auto selection = tree_view->get_selection();
+  auto row = selection->get_selected();
+  if (row) {
+  }
+}
+
+void ConverterWindow::on_move_down() {
+  auto selection = tree_view->get_selection();
+  auto row = selection->get_selected();
+  if (row) {
+  }
 }

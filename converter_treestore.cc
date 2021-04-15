@@ -54,8 +54,8 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
   return Gtk::TreeStore::row_drop_possible_vfunc(dest, selection_data);
 }
 
-int ConverterTreeStore::get_total_length(const Gtk::TreeModel::iterator& parent) {
-  int total_duration = 0;
+long long int ConverterTreeStore::get_total_length(const Gtk::TreeModel::iterator& parent) {
+  long long int total_duration = 0;
 
   typedef Gtk::TreeModel::Children type_children;
   type_children children = parent->children();

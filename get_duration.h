@@ -9,8 +9,8 @@ extern "C" {
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
 
-int open_input_file(const char *filename, int *duration);
-int get_audio_duration(const char *filename);
+int open_input_file(const char *filename, long long int *duration);
+long long int get_audio_duration(const char *filename);
 
 #ifdef __cplusplus
 }
