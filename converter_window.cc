@@ -9,7 +9,8 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   author_entry(nullptr),
   year_entry(nullptr),
   cover_image_button(nullptr),
-  cover_image_display(nullptr)
+  cover_image_display(nullptr),
+  comment_text_view(nullptr)
 {
   // fetch all widgets
   glade->get_widget("tree_view", tree_view);
@@ -18,6 +19,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   glade->get_widget("year_entry", year_entry);
   glade->get_widget("cover_image_button", cover_image_button);
   glade->get_widget("cover_image_display", cover_image_display);
+  glade->get_widget("comment_text_view", comment_text_view);
 
   // bind image picker button
   cover_image_button->signal_clicked().connect(
@@ -140,6 +142,7 @@ void ConverterWindow::on_convert() {
   std::cout << "Author: " << author_entry->get_text() << std::endl;
   std::cout << "Year: " << year_entry->get_text() << std::endl;
   std::cout << "Cover Image: " << cover_image_path << std::endl;
+  std::cout << "Comment: " << comment_text_view->get_buffer()->get_text() << std::endl;
 
   std::cout << "--- Chapters ---" << std::endl;
   auto chapters = tree_model->children();

@@ -29,6 +29,7 @@ class ConverterWindow : public Gtk::ApplicationWindow {
     Gtk::Entry* year_entry;
     Gtk::Button* cover_image_button;
     Gtk::Image* cover_image_display;
+    Gtk::TextView* comment_text_view;
 
     Gtk::TreeView* tree_view;
     Glib::RefPtr<ConverterTreeStore> tree_model;
