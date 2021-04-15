@@ -80,22 +80,20 @@ void ConverterWindow::on_add_file() {
   std::string filename;
   long long int length;
   
-  Gtk::FileChooserDialog dialog("Please choose an mp3", Gtk::FILE_CHOOSER_ACTION_OPEN);
-  dialog.set_transient_for(*this);
-
-  dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
-  dialog.add_button("_Open", Gtk::RESPONSE_OK);
+  Glib::RefPtr<Gtk::FileChooserNative> dialog = Gtk::FileChooserNative::create(
+    "Please choose an mp3", *this,
+    Gtk::FILE_CHOOSER_ACTION_OPEN, "", "");
 
   auto filter_audio = Gtk::FileFilter::create();
   filter_audio->set_name("MP3 files");
   filter_audio->add_pattern("*.mp3");
-  dialog.add_filter(filter_audio);
+  dialog->add_filter(filter_audio);
 
-  int result = dialog.run();
+  int result = dialog->run();
 
   switch (result) {
-    case (Gtk::RESPONSE_OK): {
-      filename = dialog.get_filename();
+    case (Gtk::ResponseType::RESPONSE_ACCEPT): {
+      filename = dialog->get_filename();
       // std::cout << "File selected: " << filename << std::endl;
       const char *filename_c = filename.c_str();
       length = get_audio_duration(filename_c);
@@ -204,24 +202,22 @@ void ConverterWindow::on_cover_image_button_clicked() {
   std::string filename;
   bool animated;
 
-  Gtk::FileChooserDialog dialog("Please choose a cover image", Gtk::FILE_CHOOSER_ACTION_OPEN);
-  dialog.set_transient_for(*this);
-
-  dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
-  dialog.add_button("_Open", Gtk::RESPONSE_OK);
+  Glib::RefPtr<Gtk::FileChooserNative> dialog = Gtk::FileChooserNative::create(
+    "Please choose a cover image", *this,
+    Gtk::FILE_CHOOSER_ACTION_OPEN, "", "");
 
   auto filter_image = Gtk::FileFilter::create();
   filter_image->set_name("Images");
   filter_image->add_mime_type("image/jpeg");
   filter_image->add_mime_type("image/png");
   filter_image->add_mime_type("image/gif");
-  dialog.add_filter(filter_image);
+  dialog->add_filter(filter_image);
 
-  int result = dialog.run();
+  int result = dialog->run();
 
   switch (result) {
-    case (Gtk::RESPONSE_OK): {
-      filename = dialog.get_filename();
+    case (Gtk::RESPONSE_ACCEPT): {
+      filename = dialog->get_filename();
       std::cout << "File selected: " << filename << std::endl;
 
       animated = hasEnding(filename, ".gif");

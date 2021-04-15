@@ -1,6 +1,5 @@
 #include "converter_treestore.h"
 #include <gtkmm.h>
-// #include <gdkmm.h>
 #include <iostream>
 
 class ConverterWindow : public Gtk::ApplicationWindow {
