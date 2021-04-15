@@ -12,11 +12,11 @@ resources = gnome.compile_resources(
   source_dir: 'resources')
 
 executable('mp3-to-m4b',
-           'main.cc',
-           'get_duration.cc',
-           'converter_window.cc',
-           'converter_treestore.cc',
-           'converter_application.cc',
+           'src/main.cc',
+           'src/get_duration.cc',
+           'src/converter_window.cc',
+           'src/converter_treestore.cc',
+           'src/converter_application.cc',
            resources,
            install: false,
            dependencies: deps,

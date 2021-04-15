@@ -1,6 +1,9 @@
-#include "converter_treestore.h"
-#include <gtkmm.h>
 #include <iostream>
+
+#include <gtkmm.h>
+
+#include "converter_treestore.h"
+#include "get_duration.h"
 
 class ConverterWindow : public Gtk::ApplicationWindow {
   public:

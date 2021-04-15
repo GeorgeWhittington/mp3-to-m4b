@@ -1,5 +1,4 @@
 #include "converter_window.h"
-#include "get_duration.h"
 
 typedef unsigned int uint;
 

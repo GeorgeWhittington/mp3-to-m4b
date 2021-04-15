@@ -10,6 +10,8 @@ Use the package manager of your choice (apt, brew, idk what windows folks have t
 ## Setting up Meson:
 1. Install [Meson](https://mesonbuild.com/SimpleStart.html) and ensure it is in your PATH
 2. Navigate to the root directory of this project
-3. Run `meson setup build`
+3. Create a build directory (`mkdir build`) and navigate inside it (`cd build`)
+4. Run `meson ..` to initialise meson
+5. Run `meson compile` to compile the project
 
 Once these steps are complete, you only need to use the command `meson compile` inside the build directory to build the application, even if the meson.build file changes. The executable will be called `mp3-to-m4b`.

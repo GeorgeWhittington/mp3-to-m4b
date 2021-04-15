@@ -2,4 +2,4 @@ Most of the stuff in this subfolder is example code pinched from tutorials/docum
 
 Essentially, assume I didn't write it, cause despite some modifications 90% is other people's stuff.
 
-The code in the main directory is the only stuff I claim to have written wholesale :P
+The code in the src directory is the only stuff I claim to have written wholesale :P
