@@ -28,6 +28,12 @@ class ConverterTreeStore : public Gtk::TreeStore {
     static Glib::RefPtr<ConverterTreeStore> create();
   
   protected:
+    void on_row_changed_custom(
+      const Gtk::TreeModel::Path& path,
+      const Gtk::TreeModel::iterator& iter);
+    void on_row_deleted_custom(const Gtk::TreeModel::Path& path);
+    int get_total_length(const Gtk::TreeModel::iterator& parent);
+    
     // overriden function
     bool row_drop_possible_vfunc(
       const Gtk::TreeModel::Path& dest,

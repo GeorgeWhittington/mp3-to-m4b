@@ -3,6 +3,10 @@
 
 ConverterTreeStore::ConverterTreeStore() {
   set_column_types(columns);
+
+  // bind signals to keep chapter length up to date
+  signal_row_changed().connect(sigc::mem_fun(*this, &ConverterTreeStore::on_row_changed_custom));
+  signal_row_deleted().connect(sigc::mem_fun(*this, &ConverterTreeStore::on_row_deleted_custom));
 }
 
 Glib::RefPtr<ConverterTreeStore> ConverterTreeStore::create() {
@@ -51,4 +55,44 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
   return Gtk::TreeStore::row_drop_possible_vfunc(dest, selection_data);
 }
 
-// handlers for row change and row delete to keep chapter length up to date
+int ConverterTreeStore::get_total_length(const Gtk::TreeModel::iterator& parent) {
+  int total_duration = 0;
+
+  typedef Gtk::TreeModel::Children type_children;
+  type_children children = parent->children();
+  for (type_children::iterator iter = children.begin(); iter != children.end(); ++iter) {
+    Gtk::TreeModel::Row child = *iter;
+    total_duration += child.get_value(columns.length);
+  }
+
+  return total_duration;
+}
+
+void ConverterTreeStore::on_row_changed_custom(const Gtk::TreeModel::Path& path, const Gtk::TreeModel::iterator& iter) {
+  // chapters changing doesn't affect chapter length
+  bool is_chapter = iter->get_value(columns.chapter);
+  if (is_chapter) {
+    return;
+  }
+
+  Gtk::TreeModel::Path parent_path = path;
+  parent_path.up();
+
+  Gtk::TreeModel::iterator parent = get_iter(parent_path);
+  parent->set_value(columns.length, get_total_length(parent));
+}
+
+void ConverterTreeStore::on_row_deleted_custom(const Gtk::TreeModel::Path& path) {
+  Gtk::TreeModel::Path parent_path = path; // Copy path
+  bool path_not_top_level = parent_path.up(); // Move path up one level
+  bool path_top_level = !path_not_top_level || parent_path.empty();
+
+  // if a chapter is deleted, no updates are needed
+  if (path_top_level) {
+    return;
+  }
+
+  // not using the const stuff the example code I used did, might break
+  Gtk::TreeModel::iterator parent = get_iter(parent_path);
+  parent->set_value(columns.length, get_total_length(parent));
+}
