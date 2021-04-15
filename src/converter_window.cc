@@ -1,7 +1,12 @@
 #include <iostream>
+#include <memory>
+#include <mutex>
 
+#include <boost/filesystem.hpp>
 #include <gtkmm.h>
 
+#include "conversion_dialog.h"
+#include "conversion_worker.h"
 #include "converter_window.h"
 #include "get_duration.h"
 
@@ -10,14 +15,14 @@ typedef unsigned int uint;
 ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade)
 : Gtk::ApplicationWindow(c_object),
   glade(ref_glade),
-  tree_view(nullptr),
   title_entry(nullptr),
   author_entry(nullptr),
   year_entry(nullptr),
   cover_image_button(nullptr),
   cover_image_display(nullptr),
-  conversion_dialog(nullptr),
-  comment_text_view(nullptr)
+  comment_text_view(nullptr),
+  tree_view(nullptr),
+  conversion_dialog(nullptr)
 {
   // fetch all widgets
   glade->get_widget("tree_view", tree_view);
@@ -27,6 +32,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   glade->get_widget("cover_image_button", cover_image_button);
   glade->get_widget("cover_image_display", cover_image_display);
   glade->get_widget("comment_text_view", comment_text_view);
+  glade->get_widget_derived("conversion_dialog", conversion_dialog);
 
   // bind image picker button
   cover_image_button->signal_clicked().connect(
@@ -156,41 +162,35 @@ void ConverterWindow::on_remove_row() {
 }
 
 void ConverterWindow::on_convert() {
-  // LOGGING
-  std::cout << "--- Metadata ---" << std::endl;
-  std::cout << "Title: " << title_entry->get_text() << std::endl;
-  std::cout << "Author: " << author_entry->get_text() << std::endl;
-  std::cout << "Year: " << year_entry->get_text() << std::endl;
-  std::cout << "Cover Image: " << cover_image_path << std::endl;
-  std::cout << "Comment: " << comment_text_view->get_buffer()->get_text() << std::endl;
-
-  std::cout << "--- Chapters ---" << std::endl;
-  Gtk::TreeModel::Children chapters = tree_model->children();
-
-  for (uint i = 0; i < chapters.size(); i++) {
-    std::cout << i << ": " << chapters[i].get_value(tree_model->columns.title) << std::endl;
-
-    Gtk::TreeNodeChildren files = chapters[i].children();
-
-    for (uint j = 0; j < files.size(); j++) {
-      std::cout << "    " << j << ": " << files[j].get_value(tree_model->columns.file_name);
-      std::cout << " " << files[j].get_value(tree_model->columns.length) << std::endl;
-    }
-  }
-  // LOGGING
-
-  if (conversion_dialog) {
+  if (conversion_dialog->working) {
     std::cerr << "Conversion already in progress" << std::endl;
     return;
   }
 
-  ConversionData conversion_data;
+  if (conversion_dialog->worker_thread) {
+    bool has_stopped;
+    {
+      std::lock_guard<std::mutex> lock(conversion_dialog->conversion_mutex);
+      has_stopped = conversion_dialog->worker->get_has_stopped();
+    }
 
-  conversion_data.title = title_entry->get_text();
-  conversion_data.author = author_entry->get_text();
-  conversion_data.year = year_entry->get_text();
-  conversion_data.cover_image_path = cover_image_path;
-  conversion_data.comment = comment_text_view->get_buffer()->get_text();
+    if (!has_stopped) {
+      std::cerr << "Conversion already in progress" << std::endl;
+      return;
+    }
+  }
+
+  conversion_dialog->working = true;
+
+  std::shared_ptr<ConversionData> conversion_data = std::make_shared<ConversionData>();
+
+  conversion_data->title = title_entry->get_text();
+  conversion_data->author = author_entry->get_text();
+  conversion_data->year = year_entry->get_text();
+  conversion_data->cover_image_path = cover_image_path;
+  conversion_data->comment = comment_text_view->get_buffer()->get_text();
+
+  Gtk::TreeModel::Children chapters = tree_model->children();
 
   for (uint i = 0; i < chapters.size(); i++) {
     std::string title = chapters[i].get_value(tree_model->columns.title);
@@ -201,22 +201,49 @@ void ConverterWindow::on_convert() {
       file_names.push_back(files[j].get_value(tree_model->columns.file_name));
     }
 
-    conversion_data.chapters.push_back(ChapterData(title, file_names));
+    if (file_names.size() < 1) {
+      std::cout << "Chapter " << title << " contains no files, skipped" << std::endl;
+      continue;
+    }
+
+    conversion_data->chapters.push_back(ChapterData(title, file_names));
   }
 
-  glade->get_widget_derived("conversion_dialog", conversion_dialog, &conversion_data);
-  conversion_dialog->run();
+  std::shared_ptr<ConversionWorker> worker = std::make_shared<ConversionWorker>(conversion_data);
 
-  delete conversion_dialog;
-  conversion_dialog = nullptr;
+  conversion_dialog->reset_dialog(worker);
+  conversion_dialog->begin_conversion();
+  int result = conversion_dialog->run();
 
-  // check there are no existing worker threads, don't want multiple conversions at once
-  // create worker thread (std::thread), communicate with it via Glib::Dispatcher
-  // inside worker thread, begin external ffmpeg and then AtomicParsley processes
-  // (will have to decide if boost::processes is still worth using for cleanliness's sake)
-  // have a dialog with a spinner in it and a cancel button. maybe have a bit more communication
-  // so we can track what step stuff is on? (find actual file durations, run ffmpeg, run atomicparsley)
-  // merge worker thread back in on cancel/failure/success
+  std::cout << result << std::endl;
+
+  // After run() the worker thread *should* be joined, but there is no guarantee.
+  // (this is due to the window's close button overriding us)
+  // due to this, only access data shared with it using mutex locked
+  // functions, or if result == Gtk::RESPONSE_OK 
+
+  boost::filesystem::path temp_m4b_path;
+
+  switch (result) {
+    case (Gtk::RESPONSE_OK):
+      temp_m4b_path = conversion_dialog->get_m4b_path();
+
+      // file save dialog, move + rename file 
+      // to location specified
+
+      boost::filesystem::rename(
+        temp_m4b_path, boost::filesystem::path(
+          "/Users/george/" + temp_m4b_path.filename().string()));
+
+      break;
+    case (Gtk::RESPONSE_NONE):
+      // Error occured, shove a dialog up
+      break;
+    default:
+      break;
+  }
+
+  conversion_dialog->working = false;
 }
 
 void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter) {

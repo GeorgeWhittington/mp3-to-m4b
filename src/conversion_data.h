@@ -8,14 +8,17 @@ class ChapterData {
   public:
     ChapterData(std::string title, std::vector<std::string> file_names);
 
+    double get_chapter_length();
+
     std::string title;
     std::vector<std::string> file_names;
 };
 
-// Possibly provide with a mutex?
 class ConversionData {
   public:
     ConversionData();
+
+    int get_chapter_metadata(std::vector<std::string>* chapter_metadata);
 
     std::string title;
     std::string author;

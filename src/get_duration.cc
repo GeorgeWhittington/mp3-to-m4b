@@ -11,6 +11,7 @@
 // https://github.com/FFmpeg/FFmpeg/blob/master/doc/examples/transcoding.c
 // https://github.com/h4tr3d/avcpp/blob/master/example/api2-samples/api2-decode-audio.cpp
 
+// Find approximate duration of file in microseconds
 // returning less than 0 means error
 long long int get_audio_duration(std::string filename) {
   av::init();
@@ -64,6 +65,7 @@ long long int get_audio_duration(std::string filename) {
   }
 }
 
+// Find exact duration of audio containing file in seconds
 // returning less than 0 means error
 double get_audio_duration_exact(std::string filename) {
   av::init();

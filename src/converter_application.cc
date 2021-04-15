@@ -1,4 +1,3 @@
-#include <gtk.h>
 #include <gtkmm.h>
 
 #include "converter_application.h"
