@@ -6,6 +6,7 @@ Use the package manager of your choice (apt, brew, idk what windows folks have t
 1. [avcpp](https://github.com/h4tr3d/avcpp) == commit fe8847aa740aa4c2868c020c82d6765c8520c1a1
 2. gtkmm == v3.24.2
 3. adwaita-icon-theme == v3.38.0
+4. Boost == v1.75.0
 
 ## Setting up Meson:
 1. Install [Meson](https://mesonbuild.com/SimpleStart.html) and ensure it is in your PATH
