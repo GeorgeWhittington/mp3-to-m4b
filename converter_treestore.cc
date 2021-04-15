@@ -78,7 +78,8 @@ void ConverterTreeStore::on_row_changed_custom(const Gtk::TreeModel::Path& path,
   Gtk::TreeModel::Path parent_path = path;
   parent_path.up();
 
-  Gtk::TreeModel::iterator parent = get_iter(parent_path);
+  auto unconst_this = const_cast<ConverterTreeStore*>(this);
+  Gtk::TreeModel::iterator parent = unconst_this->get_iter(parent_path);
   parent->set_value(columns.length, get_total_length(parent));
 }
 
@@ -92,7 +93,7 @@ void ConverterTreeStore::on_row_deleted_custom(const Gtk::TreeModel::Path& path)
     return;
   }
 
-  // not using the const stuff the example code I used did, so this might break
-  Gtk::TreeModel::iterator parent = get_iter(parent_path);
+  auto unconst_this = const_cast<ConverterTreeStore*>(this);
+  Gtk::TreeModel::iterator parent = unconst_this->get_iter(parent_path);
   parent->set_value(columns.length, get_total_length(parent));
 }

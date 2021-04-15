@@ -80,13 +80,22 @@ static int open_input_file(const char *filename,
         return error;
     }
 
-    /* Make sure that there is only one stream in the input file. */
-    if ((*input_format_context)->nb_streams != 1) {
-        fprintf(stderr, "Expected one audio input stream, but found %d\n",
-                (*input_format_context)->nb_streams);
-        avformat_close_input(input_format_context);
-        return AVERROR_EXIT;
-    }
+    // // Gonna remove this check, but do need to replace it,
+    // // Check that there's at least one audio stream? dunno.
+
+    // /* Make sure that there is only one stream in the input file. */
+    // if ((*input_format_context)->nb_streams != 1) {
+        
+    //     // unsigned int nb_streams = (*input_format_context)->nb_streams;
+    //     // for (unsigned int i = 0; i < nb_streams; i++) {
+    //     //     av_dump_format(*input_format_context, i, filename, 0);
+    //     // }
+
+    //     fprintf(stderr, "Expected one audio input stream, but found %d\n",
+    //             (*input_format_context)->nb_streams);
+    //     avformat_close_input(input_format_context);
+    //     return AVERROR_EXIT;
+    // }
 
     /* Find a decoder for the audio stream. */
     if (!(input_codec = avcodec_find_decoder((*input_format_context)->streams[0]->codecpar->codec_id))) {
