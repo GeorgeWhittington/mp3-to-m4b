@@ -224,9 +224,10 @@ void ConverterWindow::on_cover_image_button_clicked() {
   // Only allow picking jpeg, png or gif images
   auto filter_image = Gtk::FileFilter::create();
   filter_image->set_name("Images");
-  filter_image->add_mime_type("image/jpeg");
-  filter_image->add_mime_type("image/png");
-  filter_image->add_mime_type("image/gif");
+  filter_image->add_pattern("*.jpeg");
+  filter_image->add_pattern("*.jpg");
+  filter_image->add_pattern("*.png");
+  filter_image->add_pattern("*.gif");
   dialog->add_filter(filter_image);
 
   int result = dialog->run();
