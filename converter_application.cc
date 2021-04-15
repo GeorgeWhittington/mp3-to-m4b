@@ -17,9 +17,6 @@ ConverterApplication::ConverterApplication()
 
   Glib::RefPtr<Gdk::Screen> screen = Gdk::Screen::get_default();
 
-  // GTK3 defines this, gtkmm's headers are just being weird
-  // #define GTK_STYLE_PROVIDER_PRIORITY_APPLICATION 600
-
   style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
@@ -49,6 +46,6 @@ void ConverterApplication::create_window() {
   if (glade) {
     ConverterWindow* window = nullptr;
     glade->get_widget_derived("converter_application_window", window);
-    add_window(*window);  // Add window to application
+    add_window(*window);  // Add window to application so stuff closes correctly
   }
 }

@@ -1,0 +1,1 @@
+The file `logo.svg` is a version of [this file](https://www.flaticon.com/free-icon/audiobook_1861441) which I have modified to create my logo. It is also attributed in the about dialog of my application.

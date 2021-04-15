@@ -4,6 +4,8 @@ extern "C" {
 
 #include "get_duration.h"
 
+// Code adapted from https://github.com/FFmpeg/FFmpeg/blob/master/doc/examples/transcoding.c
+
 static AVFormatContext *input_format_ctx;
 
 typedef struct StreamContext {
@@ -70,16 +72,12 @@ int open_input_file(const char *filename, long long int *duration) {
     }
   }
 
-  // av_dump_format(input_format_ctx, 0, filename, 0);
-
-  // Sourced from av_dump_format:
-  // av_log(NULL, AV_LOG_INFO, "Duration in microseconds: ");
+  // Method for reading duration correctly modified from the function av_dump_format
+  // https://github.com/FFmpeg/FFmpeg/blob/c5341d415cb2d7ab33eaa4b186d1d26fac6e3cb7/libavformat/dump.c#L640
   if (input_format_ctx->duration != AV_NOPTS_VALUE) {
     int64_t duration_microseconds = input_format_ctx->duration + (input_format_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
-    // av_log(NULL, AV_LOG_INFO, "%d\n", duration_microseconds);
     *duration = (long long int)duration_microseconds;
   } else {
-    // av_log(NULL, AV_LOG_INFO, "N/A\n");
     *duration = -1;
   }
 
@@ -106,9 +104,9 @@ long long int get_audio_duration(const char *filename) {
   }
 
   if (ret) {
-    return -1;
+    return -1; // -1 == failure
   } else {
-    return duration;
+    return duration; // otherwise duration
   }
 }
 

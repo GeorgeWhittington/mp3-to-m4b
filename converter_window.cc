@@ -64,15 +64,13 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   filename_cell_renderer->property_wrap_mode().set_value(Pango::WRAP_WORD_CHAR);
   filename_cell_renderer->property_wrap_width().set_value(240);
 
-  // Ensure n.o. seconds in length renders as a time
+  // Ensure n.o. microseconds in length renders as a time
   length_index -= 1;
   Gtk::TreeViewColumn* length_column = tree_view->get_column(length_index);
   Gtk::CellRenderer* length_cell_renderer = tree_view->get_column_cell_renderer(length_index);
   length_column->set_cell_data_func(
     *length_cell_renderer,
     sigc::mem_fun(*this, &ConverterWindow::on_set_cell_length) );
-
-
 
   show_all();
 }
@@ -93,7 +91,6 @@ Gtk::TreeModel::Row ConverterWindow::add_chapter() {
 }
 
 void ConverterWindow::on_add_file() {
-  // filepicker, analyse mp3's for length
   std::string filename;
   long long int length;
   
@@ -103,7 +100,7 @@ void ConverterWindow::on_add_file() {
 
   auto filter_audio = Gtk::FileFilter::create();
   filter_audio->set_name("MP3 files");
-  filter_audio->add_pattern("*.mp3");
+  filter_audio->add_pattern("*.mp3"); // Can only pick files with mp3 extension
   dialog->add_filter(filter_audio);
 
   int result = dialog->run();
@@ -111,21 +108,19 @@ void ConverterWindow::on_add_file() {
   switch (result) {
     case (Gtk::ResponseType::RESPONSE_ACCEPT): {
       filename = dialog->get_filename();
-      // std::cout << "File selected: " << filename << std::endl;
       const char *filename_c = filename.c_str();
       length = get_audio_duration(filename_c);
-      // std::cout << "File duration (in seconds): " << length << std::endl;
       break;
     }
     default: {
-      return;
+      return; // Bad response from filepicker dialog, stop
     }
   }
 
   auto selection = tree_view->get_selection();
   auto row = selection->get_selected();
 
-  // If chapter selected, add under
+  // If chapter selected, add the file under it
   if (row) {
     bool chapter = row->get_value(tree_model->columns.chapter);
     if (chapter) {
@@ -138,7 +133,7 @@ void ConverterWindow::on_add_file() {
     }
   }
 
-  // Otherwise create and add under
+  // Otherwise create a chapter to add under
   auto chapter = add_chapter();
   Gtk::TreeModel::Row file_row = *(tree_model->append(chapter.children()));
   file_row[tree_model->columns.chapter] = false;
@@ -207,7 +202,8 @@ void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk:
   }
 }
 
-bool hasEnding(std::string const &fullString, std::string const &ending) {
+// https://stackoverflow.com/a/874160
+bool has_ending(std::string const &fullString, std::string const &ending) {
   if (fullString.length() >= ending.length()) {
     return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
   } else {
@@ -223,6 +219,7 @@ void ConverterWindow::on_cover_image_button_clicked() {
     "Please choose a cover image", *this,
     Gtk::FILE_CHOOSER_ACTION_OPEN, "", "");
 
+  // Only allow picking jpeg, png or gif images
   auto filter_image = Gtk::FileFilter::create();
   filter_image->set_name("Images");
   filter_image->add_mime_type("image/jpeg");
@@ -235,13 +232,11 @@ void ConverterWindow::on_cover_image_button_clicked() {
   switch (result) {
     case (Gtk::RESPONSE_ACCEPT): {
       filename = dialog->get_filename();
-      std::cout << "File selected: " << filename << std::endl;
-
-      animated = hasEnding(filename, ".gif");
+      animated = has_ending(filename, ".gif");
       break;
     }
     default: {
-      return;
+      return; // Bad response from filepicker dialog, stop
     }
   }
 
@@ -263,7 +258,7 @@ void ConverterWindow::on_cover_image_button_clicked() {
       int width = pixbuf->get_width();
       if (width > 500) {
         std::cout << "scaling down image" << std::endl;
-        // Should scale to fit inside 500x500 dimensions, while preserving aspect ratio
+        // Scale to fit inside 500x500 dimensions, while preserving aspect ratio
         pixbuf = Gdk::Pixbuf::create_from_file(filename, 500, 500);
       }
 
@@ -304,7 +299,7 @@ void ConverterWindow::on_about() {
   dialog.run();
 }
 
-// do stuff here lol
+// TODO: Implement these two
 
 void ConverterWindow::on_move_up() {
   auto selection = tree_view->get_selection();

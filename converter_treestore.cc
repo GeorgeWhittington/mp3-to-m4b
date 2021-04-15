@@ -55,6 +55,7 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
 }
 
 long long int ConverterTreeStore::get_total_length(const Gtk::TreeModel::iterator& parent) {
+  // Sum length of child rows
   long long int total_duration = 0;
 
   typedef Gtk::TreeModel::Children type_children;
@@ -91,7 +92,7 @@ void ConverterTreeStore::on_row_deleted_custom(const Gtk::TreeModel::Path& path)
     return;
   }
 
-  // not using the const stuff the example code I used did, might break
+  // not using the const stuff the example code I used did, so this might break
   Gtk::TreeModel::iterator parent = get_iter(parent_path);
   parent->set_value(columns.length, get_total_length(parent));
 }
