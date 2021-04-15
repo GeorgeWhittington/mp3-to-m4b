@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg id="Layer_1" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-2" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(235, 235, 238);"/>
+      <stop offset="1" style="stop-color: rgb(33, 181, 198);"/>
+    </linearGradient>
+    <linearGradient id="gradient-0" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(33, 181, 198);"/>
+      <stop offset="1" style="stop-color: rgb(21, 61, 103);"/>
+    </linearGradient>
+    <linearGradient id="gradient-0-0" gradientUnits="userSpaceOnUse" x1="347" y1="121" x2="347" y2="451" xlink:href="#gradient-0"/>
+    <linearGradient id="gradient-0-1" gradientUnits="userSpaceOnUse" x1="347" y1="271" x2="347" y2="301" xlink:href="#gradient-0"/>
+  </defs>
+  <path d="m392 91v-90h-347c-24.814 0-45 20.186-45 45s20.186 45 45 45z" style="fill: rgb(21, 61, 103);"/>
+  <path d="m362 286c0-8.276-6.738-15-15-15s-15 6.724-15 15 6.738 15 15 15 15-6.724 15-15z" style="paint-order: fill; fill: url(#gradient-0-1);"/>
+  <path d="m380.223 124.354c-10.137-2.226-21.328-3.354-33.223-3.354-90.967 0-165 74.019-165 165s74.033 165 165 165c11.836 0 22.998-1.128 32.959-3.296 76.523-15.439 132.041-83.437 132.041-161.704s-55.518-146.265-131.777-161.646zm-108.223 161.646h-30c0-57.891 47.109-105 105-105v30c-41.367 0-75 33.647-75 75zm30 0c0-24.814 20.186-45 45-45s45 20.186 45 45-20.186 45-45 45-45-20.186-45-45zm45 105v-30c41.367 0 75-33.647 75-75h30c0 57.891-47.109 105-105 105z" style="paint-order: fill; fill: url(#gradient-0-0);"/>
+  <path d="m45 511h347v-35.684c-2.08.493-3.986 1.377-6.094 1.802-11.718 2.549-24.931 3.882-38.906 3.882-107.52 0-195-87.48-195-195 0-69.501 36.669-130.461 91.558-165h-198.558c-16.952 0-32.428-5.861-45-15.377v360.377c0 24.814 20.186 45 45 45z" style="fill: rgb(21, 61, 103);"/>
+</svg>

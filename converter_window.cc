@@ -262,13 +262,19 @@ void ConverterWindow::on_about() {
 
   dialog.set_program_name("MP3 to M4B Converter");
   dialog.set_version("v1.0");
-  dialog.set_copyright("George Whittington");
+  dialog.set_copyright("Copyright 2021, George Whittington");
   dialog.set_license_type(Gtk::License::LICENSE_GPL_3_0);
-  dialog.set_logo_icon_name("audio-x-generic");
+
+  Glib::RefPtr<Gdk::Pixbuf> logo = Gdk::Pixbuf::create_from_resource("/org/george/mp3_to_m4b/logo.svg", 200, 200);
+  dialog.set_logo(logo);
 
   std::vector<Glib::ustring> list_authors;
   list_authors.push_back("George Whittington");
   dialog.set_authors(list_authors);
+
+  std::vector<Glib::ustring> list_logo_artists;
+  list_logo_artists.push_back("<a href='https://www.freepik.com' title='Freepik'>Freepik</a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a>");
+  dialog.add_credit_section("Logo creator", list_logo_artists);
 
   dialog.run();
 }

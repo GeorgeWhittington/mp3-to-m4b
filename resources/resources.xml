@@ -3,5 +3,6 @@
     <gresource prefix="/org/george/mp3_to_m4b">
         <file preprocess="xml-stripblanks">menu.glade</file>
         <file preprocess="xml-stripblanks">converter.glade</file>
+        <file>logo.svg</file>
     </gresource>
 </gresources>
