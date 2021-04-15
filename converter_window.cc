@@ -1,6 +1,8 @@
 #include "converter_window.h"
 #include "get_duration.h"
 
+typedef unsigned int uint;
+
 ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade)
 : Gtk::ApplicationWindow(c_object),
   glade(ref_glade),
