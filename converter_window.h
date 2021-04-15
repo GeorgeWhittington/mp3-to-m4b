@@ -17,6 +17,7 @@ class ConverterWindow : public Gtk::ApplicationWindow {
     void on_add_file();
     void on_remove_row();
     void on_convert();
+    void on_about();
     void on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter);
     void on_cover_image_button_clicked();
 

@@ -1,4 +1,6 @@
 #include <gtkmm.h>
+#include <iostream>
+#include "converter_window.h"
 
 class ConverterApplication : public Gtk::Application {
   public:

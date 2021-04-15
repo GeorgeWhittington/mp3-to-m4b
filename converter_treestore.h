@@ -1,4 +1,5 @@
 #include <gtkmm.h>
+#include <iostream>
 
 class ConverterTreeStore : public Gtk::TreeStore {
   protected:

@@ -23,7 +23,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Add Chapter</property>
-                <property name="action_name">win.add_chapter</property>
+                <property name="action_name">win.add-chapter</property>
                 <property name="label" translatable="yes">tool chapter</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-add</property>
@@ -38,7 +38,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Add File</property>
-                <property name="action_name">win.add_file</property>
+                <property name="action_name">win.add-file</property>
                 <property name="label" translatable="yes">tool file</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-file</property>
@@ -53,7 +53,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Remove a chapter/file</property>
-                <property name="action_name">win.remove_row</property>
+                <property name="action_name">win.remove-row</property>
                 <property name="label" translatable="yes">tool remove</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-delete</property>
@@ -181,6 +181,7 @@
                           <object class="GtkEntry" id="title_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Enter m4b title tag</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -192,6 +193,7 @@
                           <object class="GtkEntry" id="author_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Enter m4b author tag</property>
                           </object>
                           <packing>
                             <property name="left_attach">2</property>
@@ -203,6 +205,7 @@
                           <object class="GtkEntry" id="year_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Enter m4b year tag</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -216,6 +219,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Choose an image for the m4b cover art</property>
                           </object>
                           <packing>
                             <property name="left_attach">2</property>
@@ -240,6 +244,7 @@
                             <property name="height_request">100</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Enter m4b comment tag</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -251,6 +256,7 @@
                           <object class="GtkImage" id="cover_image_display">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Currently selected cover art for m4b</property>
                             <property name="stock">gtk-missing-image</property>
                           </object>
                           <packing>

@@ -1,5 +1,4 @@
 #include "converter_treestore.h"
-#include <iostream>
 
 ConverterTreeStore::ConverterTreeStore() {
   set_column_types(columns);

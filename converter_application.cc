@@ -1,9 +1,7 @@
 #include "converter_application.h"
-#include "converter_window.h"
-#include <iostream>
 
 ConverterApplication::ConverterApplication()
-: Gtk::Application("org.george.mp3tom4b"),
+: Gtk::Application("org.george.mp3_to_m4b"),
   glade(Gtk::Builder::create())
 {
   // If this was going to be built as an installable app, the .glade
@@ -11,6 +9,7 @@ ConverterApplication::ConverterApplication()
   // checking could disappear, and it'd therefore be fine to open them here :)
   try {
     glade->add_from_file("converter.glade");
+    glade->add_from_file("menu.glade");
   } catch(const Glib::FileError& ex) {
     std::cerr << "FileError: " << ex.what() << std::endl;
   } catch(const Glib::MarkupError& ex) {
@@ -28,6 +27,16 @@ Glib::RefPtr<ConverterApplication> ConverterApplication::create() {
 
 void ConverterApplication::on_startup() {
   Gtk::Application::on_startup();
+
+  auto object = glade->get_object("application_menu");
+  auto app_menu = Glib::RefPtr<Gio::Menu>::cast_dynamic(object);
+
+  if (!app_menu) {
+    std::cout << "Application menu not found" << std::endl;
+    g_warning("Application menu not found");
+  } else {
+    set_menubar(app_menu);
+  }
 }
 
 void ConverterApplication::on_activate() {

@@ -26,10 +26,11 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
     sigc::mem_fun(*this, &ConverterWindow::on_cover_image_button_clicked) );
 
   // Set up actions
-  add_action("add_chapter", sigc::mem_fun(*this, &ConverterWindow::on_add_chapter));
-  add_action("add_file", sigc::mem_fun(*this, &ConverterWindow::on_add_file));
-  add_action("remove_row", sigc::mem_fun(*this, &ConverterWindow::on_remove_row));
+  add_action("add-chapter", sigc::mem_fun(*this, &ConverterWindow::on_add_chapter));
+  add_action("add-file", sigc::mem_fun(*this, &ConverterWindow::on_add_file));
+  add_action("remove-row", sigc::mem_fun(*this, &ConverterWindow::on_remove_row));
   add_action("convert", sigc::mem_fun(*this, &ConverterWindow::on_convert));
+  add_action("about", sigc::mem_fun(*this, &ConverterWindow::on_about));
 
   // Set up tree model and view
   tree_model = ConverterTreeStore::create();
@@ -251,4 +252,21 @@ void ConverterWindow::on_cover_image_button_clicked() {
   }
 
   cover_image_path = filename;
+}
+
+void ConverterWindow::on_about() {
+  Gtk::AboutDialog dialog;
+  dialog.set_transient_for(*this);
+
+  dialog.set_program_name("MP3 to M4B Converter");
+  dialog.set_version("v1.0");
+  dialog.set_copyright("George Whittington");
+  dialog.set_license_type(Gtk::License::LICENSE_GPL_3_0);
+  dialog.set_logo_icon_name("audio-x-generic");
+
+  std::vector<Glib::ustring> list_authors;
+  list_authors.push_back("George Whittington");
+  dialog.set_authors(list_authors);
+
+  dialog.run();
 }
