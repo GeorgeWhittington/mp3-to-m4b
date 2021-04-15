@@ -1,0 +1,17 @@
+project('mp3-to-m4b', 'cpp',
+  version : '0.1',
+  default_options : ['warning_level=3', 'cpp_std=c++14'])
+
+deps = [
+  dependency('gtkmm-3.0'), dependency('libavcodec'),
+  dependency('libavformat'), dependency('libavfilter'),
+  dependency('libavutil')]
+
+executable('mp3-to-m4b',
+           'main.cc',
+           'get_duration.c',
+           'converter_window.cc',
+           'converter_treestore.cc',
+           'converter_application.cc',
+           install : false,
+           dependencies : deps)
