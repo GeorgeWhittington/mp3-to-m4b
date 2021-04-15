@@ -2,7 +2,7 @@
 Gui to convert mp3 files to m4b audiobooks
 
 ## Setting up Meson:
-1. Install Meson (link it) and ensure it is in your PATH
+1. Install [Meson](https://mesonbuild.com/SimpleStart.html) and ensure it is in your PATH
 2. Navigate to the root directory of this project
 3. Run `meson setup build`
 
