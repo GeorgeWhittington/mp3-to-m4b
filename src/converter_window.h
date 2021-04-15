@@ -10,7 +10,8 @@ class ConverterWindow : public Gtk::ApplicationWindow {
   public:
     ConverterWindow(
       BaseObjectType* c_object,
-      const Glib::RefPtr<Gtk::Builder>& ref_glade
+      const Glib::RefPtr<Gtk::Builder>& ref_glade,
+      std::string bin_path
     );
     virtual ~ConverterWindow();
   

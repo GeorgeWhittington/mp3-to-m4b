@@ -15,7 +15,8 @@ class ConversionDialog : public Gtk::Dialog {
   public:
     ConversionDialog(
       BaseObjectType* c_object,
-      const Glib::RefPtr<Gtk::Builder>& ref_glade
+      const Glib::RefPtr<Gtk::Builder>& ref_glade,
+      std::string bin_path
     );
     virtual ~ConversionDialog();
 
@@ -32,6 +33,7 @@ class ConversionDialog : public Gtk::Dialog {
     mutable std::mutex conversion_mutex;
     std::thread* worker_thread;
     std::shared_ptr<ConversionWorker> worker;
+    std::string bin_path;
   
   protected:
     void on_cancel_conversion();

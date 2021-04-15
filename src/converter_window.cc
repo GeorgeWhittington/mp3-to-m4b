@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <string>
 
 #include <boost/filesystem.hpp>
 #include <gtkmm.h>
@@ -12,7 +13,7 @@
 
 typedef unsigned int uint;
 
-ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade)
+ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gtk::Builder>& ref_glade, std::string bin_path)
 : Gtk::ApplicationWindow(c_object),
   glade(ref_glade),
   title_entry(nullptr),
@@ -32,7 +33,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   glade->get_widget("cover_image_button", cover_image_button);
   glade->get_widget("cover_image_display", cover_image_display);
   glade->get_widget("comment_text_view", comment_text_view);
-  glade->get_widget_derived("conversion_dialog", conversion_dialog);
+  glade->get_widget_derived("conversion_dialog", conversion_dialog, bin_path);
 
   // bind image picker button
   cover_image_button->signal_clicked().connect(
@@ -89,6 +90,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
 }
 
 ConverterWindow::~ConverterWindow() {
+  conversion_dialog->worker->clear_temp_files();
 }
 
 void ConverterWindow::on_add_chapter() {
@@ -215,32 +217,57 @@ void ConverterWindow::on_convert() {
   conversion_dialog->begin_conversion();
   int result = conversion_dialog->run();
 
-  std::cout << result << std::endl;
-
   // After run() the worker thread *should* be joined, but there is no guarantee.
   // (this is due to the window's close button overriding us)
   // due to this, only access data shared with it using mutex locked
   // functions, or if result == Gtk::RESPONSE_OK 
 
-  boost::filesystem::path temp_m4b_path;
+  Gtk::MessageDialog error_dialog = Gtk::MessageDialog(
+        *this, "An error occured during conversion.",
+        false, Gtk::MessageType::MESSAGE_ERROR,
+        Gtk::ButtonsType::BUTTONS_OK, true);
 
   switch (result) {
-    case (Gtk::RESPONSE_OK):
-      temp_m4b_path = conversion_dialog->get_m4b_path();
-
-      // file save dialog, move + rename file 
-      // to location specified
-
-      boost::filesystem::rename(
-        temp_m4b_path, boost::filesystem::path(
-          "/Users/george/" + temp_m4b_path.filename().string()));
-
+    case Gtk::RESPONSE_OK: {
       break;
-    case (Gtk::RESPONSE_NONE):
+    }
+    case Gtk::RESPONSE_NONE: {
       // Error occured, shove a dialog up
+      error_dialog.run();
+    }
+    default: {
+      // Return here on error or cancel response
+      conversion_dialog->working = false;
+      return;
       break;
-    default:
+    }
+  }
+  
+  Glib::RefPtr<Gtk::FileChooserNative> save_dialog = Gtk::FileChooserNative::create(
+    "Save m4b file", *this,
+    Gtk::FILE_CHOOSER_ACTION_SAVE, "", "");
+
+  save_dialog->set_do_overwrite_confirmation(true);
+  if (conversion_data->title != "")
+    save_dialog->set_current_name(conversion_data->title + ".m4b");
+  else
+    save_dialog->set_current_name("untitled.m4b");
+
+  result = save_dialog->run();
+
+  boost::filesystem::path temp_m4b_path;
+  boost::filesystem::path save_path;
+  temp_m4b_path = conversion_dialog->get_m4b_path();
+
+  switch (result) {
+    case Gtk::ResponseType::RESPONSE_ACCEPT: {
+      save_path = boost::filesystem::path(save_dialog->get_filename());
+      boost::filesystem::rename(temp_m4b_path, save_path);
       break;
+    }
+    default: {
+      break;
+    }
   }
 
   conversion_dialog->working = false;

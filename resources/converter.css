@@ -1,3 +1,5 @@
+messagedialog,
+dialog,
 window {
   background-color: #153D67;
 }
@@ -23,6 +25,8 @@ scrolledwindow {
   border-style: none;
 }
 
+messagedialog label,
+dialog label,
 window label {
   color: #EBEBEE;
 }
@@ -57,6 +61,8 @@ entry:selected {
   border: 2px solid #2673c5;
 }
 
+messagedialog button,
+dialog button,
 grid button {
   background-color: #1D5694;
   background-image: none;
@@ -66,11 +72,23 @@ grid button {
   border: 2px solid rgba(0, 0, 0, 0);
 }
 
+messagedialog button:hover,
+dialog button:hover,
 grid button:hover {
   border: 2px solid #2673c5;
 }
 
+dialog button label:disabled {
+  color: #85858a;
+}
+
+textview {
+  background-color: #1D5694;
+  padding: 10px;
+}
+
 textview.view text {
+  padding: 5px;
   background-color: #1D5694;
   color: #EBEBEE;
   caret-color: #EBEBEE;
@@ -79,6 +97,10 @@ textview.view text {
 
 textview.view:selected {
   border: 2px solid #2673c5;
+}
+
+dialog expander arrow {
+  color: #EBEBEE;
 }
 
 /* TODO:

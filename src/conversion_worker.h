@@ -26,12 +26,13 @@ class ConversionWorker {
     bool get_encountered_error() const;
     bool get_has_completed_work() const;
     boost::filesystem::path get_m4b_path();
+    void clear_temp_files();
 
   private:
     void set_stop(ConversionDialog* caller, bool error);
     bool update_progress(ConversionDialog* caller, double frac_done, std::string msg);
-    int get_ffmpeg_command(std::string* ffmpeg_command);
-    int get_atomic_parsley_command(std::string* atomic_command)
+    int get_ffmpeg_command(std::string* ffmpeg_command, std::string bin_path);
+    int get_atomic_parsley_command(std::string* atomic_command, std::string bin_path);
 
     bool will_stop;
     bool has_stopped;

@@ -19,7 +19,7 @@ using namespace boost::filesystem;
 std::string esc_quotes(std::string path) {
   std::string path_copy = path;
   boost::replace_all(path_copy, "\"", "\\\"");
-  return path_copy
+  return path_copy;
 }
 
 ConversionWorker::ConversionWorker(std::shared_ptr<ConversionData> convert_data)
@@ -44,6 +44,10 @@ ConversionWorker::ConversionWorker(std::shared_ptr<ConversionData> convert_data)
 }
 
 ConversionWorker::~ConversionWorker() {
+  clear_temp_files();
+}
+
+void ConversionWorker::clear_temp_files() {
   // remove temp files if still there
   if (exists(temp_metadata_path)) {
     std::remove(temp_metadata_path.c_str());
@@ -89,6 +93,7 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
   bool stop = update_progress(caller, 0.0 / steps, "Finding chapter lengths...");
   if (stop) {
     set_stop(caller, false);
+    caller->notify();
     return;
   }
 
@@ -96,12 +101,14 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
   int err = conversion_data->get_chapter_metadata(&chapter_metadata);
   if (err != 0) {
     set_stop(caller, true);
+    caller->notify();
     return;
   }
 
   stop = update_progress(caller, 1.0 / steps, "Creating metadata temp file...");
   if (stop) {
     set_stop(caller, false);
+    caller->notify();
     return;
   }
 
@@ -109,6 +116,7 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
   if (!temp_file.good()) {
     std::cerr << "Metadata file not good to write to" << std::endl;
     set_stop(caller, true);
+    caller->notify();
     return;
   }
   for (const auto &line : chapter_metadata)
@@ -118,13 +126,15 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
   stop = update_progress(caller, 2.0 / steps, "Running ffmpeg command...");
   if (stop) {
     set_stop(caller, false);
+    caller->notify();
     return;
   }
 
   std::string ffmpeg_command;
-  err = get_ffmpeg_command(&ffmpeg_command);
+  err = get_ffmpeg_command(&ffmpeg_command, caller->bin_path);
   if (err != 0) {
     set_stop(caller, true);
+    caller->notify();
     return;
   }
 
@@ -135,6 +145,7 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
   if (ec) {
     std::cerr << "Error running ffmpeg command: " << ec.message() << std::endl;
     set_stop(caller, true);
+    caller->notify();
     return;
   }
 
@@ -146,13 +157,15 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
     stop = update_progress(caller, 3.0 / steps, "Running AtomicParsley command...");
     if (stop) {
       set_stop(caller, false);
+      caller->notify();
       return;
     }
 
     std::string atomic_command;
-    err = get_atomic_parsley_command(&atomic_command);
+    err = get_atomic_parsley_command(&atomic_command, caller->bin_path);
     if (err != 0) {
       set_stop(caller, true);
+      caller->notify();
       return;
     }
 
@@ -162,6 +175,7 @@ void ConversionWorker::do_work(ConversionDialog* caller) {
     if (ec) {
       std::cerr << "Error running AtomicParsley command" << std::endl;
       set_stop(caller, true);
+      caller->notify();
       return;
     }
   } else {
@@ -204,7 +218,7 @@ bool ConversionWorker::update_progress(ConversionDialog* caller, double frac_don
   return _will_stop;
 }
 
-int ConversionWorker::get_ffmpeg_command(std::string* ffmpeg_command) {
+int ConversionWorker::get_ffmpeg_command(std::string* ffmpeg_command, std::string bin_path) {
   std::vector<std::string> all_files;
   for (const auto &chapter : conversion_data->chapters)
     all_files.insert(all_files.end(), chapter.file_names.begin(), chapter.file_names.end());
@@ -213,41 +227,49 @@ int ConversionWorker::get_ffmpeg_command(std::string* ffmpeg_command) {
   for (const auto &file_name : all_files)
     inputs += "-i \"" + esc_quotes(file_name) + "\" ";
 
+  // https://ffmpeg.org/ffmpeg-filters.html#concat
   std::string filter;
   for (size_t i = 0; i < all_files.size(); i++) {
+    // index from one, since the 0th input is the metadata file
     filter += "[" + std::to_string(i + 1) + ":a:0]";
   }
   filter += "concat=n=" + std::to_string(all_files.size()) + ":a=1:v=0[outa]";
 
+  boost::filesystem::path bin(bin_path);
+  bin /= "ffmpeg";
+
   std::stringstream command;
 
-  command << "/usr/local/bin/ffmpeg -i " << temp_metadata_path.string()
+  command << bin.string() << " -i " << temp_metadata_path.string()
           << " " << inputs << " "
-          << "-map_metadata 0 "
+          << "-map_metadata 0 " // map metadata from input 0 (metadata file) to output
           << "-filter_complex \"" << filter << "\" "
           << "-map \"[outa]\" "
-          << "-ac 2 "
-          << "-y "
-          << "-codec:a aac "
-          << "-b:a 64k "
-          << temp_m4b_path.string();
+          << "-ac 2 " // set output to use 2 audio channels
+          << "-y " // say yes to any propmts
+          << "-codec:a aac " // audio codec == aac
+          << "-b:a 64k " // set audio bitrate to 64k
+          << temp_m4b_path.string(); // output filename
 
   *ffmpeg_command = command.str();
   
   return 0;
 }
 
-int ConversionWorker::get_atomic_parsley_command(std::string* atomic_command) {
+int ConversionWorker::get_atomic_parsley_command(std::string* atomic_command, std::string bin_path) {
   std::stringstream command;
 
-  command << "/usr/local/bin/AtomicParsley " << temp_m4b_path.string() << " "
+  boost::filesystem::path bin(bin_path);
+  bin /= "AtomicParsley";
+
+  command << bin.string() << " " << temp_m4b_path.string() << " "
           << "--overWrite ";
   
   if (conversion_data->cover_image_path != "")
-    command << "--artwork \"" << esc_quotes(conversion_data->cover_image_path) << "\" "
+    command << "--artwork \"" << esc_quotes(conversion_data->cover_image_path) << "\" ";
   
   if (conversion_data->author != "")
-    command << "--artist \"" << esc_quotes(conversion_data->author) << "\" "
+    command << "--artist \"" << esc_quotes(conversion_data->author) << "\" ";
 
   if (conversion_data->year != "") {
     try {
@@ -257,7 +279,7 @@ int ConversionWorker::get_atomic_parsley_command(std::string* atomic_command) {
       return 1;
     }
 
-    command << "--year \"" << conversion_data->year << "\""
+    command << "--year \"" << conversion_data->year << "\"";
   }
 
   *atomic_command = command.str();

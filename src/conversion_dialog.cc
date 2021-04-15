@@ -9,17 +9,19 @@
 
 ConversionDialog::ConversionDialog(
   BaseObjectType* c_object,
-  const Glib::RefPtr<Gtk::Builder>& ref_glade
+  const Glib::RefPtr<Gtk::Builder>& ref_glade,
+  std::string bin_path
 )
 : Gtk::Dialog(c_object),
   working(false),
   conversion_mutex(),
+  worker_thread(nullptr),
+  worker(nullptr),
   glade(ref_glade),
   progress_bar(nullptr),
   text_view(nullptr),
   cancel_button(nullptr),
-  worker(nullptr),
-  worker_thread(nullptr)
+  bin_path(bin_path)
 {
   glade->get_widget("conversion_progress_bar", progress_bar);
   glade->get_widget("conversion_textview", text_view);
@@ -58,8 +60,6 @@ void ConversionDialog::begin_conversion() {
 }
 
 void ConversionDialog::on_cancel_conversion() {
-  std::cout << "on_cancel_conversion" << std::endl;
-
   cancel_button->set_sensitive(false);
   if (worker_thread) {
     {
@@ -70,8 +70,6 @@ void ConversionDialog::on_cancel_conversion() {
 }
 
 bool ConversionDialog::on_quit(GdkEventAny*) {
-  std::cout << "on_quit" << std::endl;
-
   cancel_button->set_sensitive(false);
   if (worker_thread) {
     {
@@ -103,8 +101,6 @@ void ConversionDialog::notify() {
 }
 
 void ConversionDialog::on_notification() {
-  std::cout << "on_notification" << std::endl;
-
   bool has_stopped;
   {
     std::lock_guard<std::mutex> lock(conversion_mutex);

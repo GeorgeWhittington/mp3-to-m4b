@@ -1,9 +1,12 @@
+#include <string>
+
 #include <gtkmm.h>
 
 #include "converter_application.h"
 
-ConverterApplication::ConverterApplication()
+ConverterApplication::ConverterApplication(std::string bin_path)
 : Gtk::Application("org.george.mp3_to_m4b"),
+  bin_path(bin_path),
   glade(Gtk::Builder::create())
 {
   glade->add_from_resource("/org/george/mp3_to_m4b/converter.glade");
@@ -23,8 +26,8 @@ ConverterApplication::ConverterApplication()
   style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-Glib::RefPtr<ConverterApplication> ConverterApplication::create() {
-  return Glib::RefPtr<ConverterApplication>(new ConverterApplication());
+Glib::RefPtr<ConverterApplication> ConverterApplication::create(std::string bin_path) {
+  return Glib::RefPtr<ConverterApplication>(new ConverterApplication(bin_path));
 }
 
 void ConverterApplication::on_startup() {
@@ -47,7 +50,15 @@ void ConverterApplication::on_activate() {
 void ConverterApplication::create_window() {
   if (glade) {
     ConverterWindow* window = nullptr;
-    glade->get_widget_derived("converter_application_window", window);
+    glade->get_widget_derived("converter_application_window", window, bin_path);
     add_window(*window);  // Add window to application so stuff closes correctly
+
+    // delete on hide so destructors get called correctly
+    window->signal_hide().connect(sigc::bind<Gtk::Window*>(sigc::mem_fun(*this,
+      &ConverterApplication::on_hide_window), window));
   }
+}
+
+void ConverterApplication::on_hide_window(Gtk::Window* window) {
+  delete window;
 }
