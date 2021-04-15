@@ -1,4 +1,4 @@
-project('mp3-to-m4b', 'cpp', 'c',
+project('mp3-to-m4b', 'cpp',
   version : '0.1',
   default_options : ['warning_level=3', 'cpp_std=c++14'])
 
@@ -21,4 +21,5 @@ executable('mp3-to-m4b',
            'converter_application.cc',
            resources,
            install: false,
-           dependencies: deps)
+           dependencies: deps,
+           cpp_args: ['-x', 'c++'])
