@@ -4,11 +4,8 @@ Gui to convert mp3 files to m4b audiobooks
 Ensure `adwaita-icon-theme` is installed to view properly.
 
 ## Installing dependencies:
-Use the package manager of your choice (apt, brew, idk what windows folks have to suffer lol) to install the following:
-1. ffmpeg >= v4.3.2
-    1. libavformat
-    2. libavfilter
-    3. libavutil
+Use the package manager of your choice (apt, brew, idk what windows folks have to suffer lol) and git+meson to install the following:
+1. [avcpp](https://github.com/h4tr3d/avcpp) == commit fe8847aa740aa4c2868c020c82d6765c8520c1a1
 2. gtkmm == v3.24.2
 
 ## Setting up Meson:

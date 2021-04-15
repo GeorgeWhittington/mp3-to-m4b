@@ -1,17 +1,7 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <iostream>
 
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libavutil/opt.h>
-#include <libavutil/pixdesc.h>
+#include <avcpp/formatcontext.h>
+#include <avcpp/codeccontext.h>
+#include <avcpp/av.h>
 
-int open_input_file(const char *filename, long long int *duration);
-long long int get_audio_duration(const char *filename);
-
-#ifdef __cplusplus
-}
-#endif
+long long int get_audio_duration(std::string filename);

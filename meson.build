@@ -3,9 +3,7 @@ project('mp3-to-m4b', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++14'])
 
 deps = [
-  dependency('gtkmm-3.0'), dependency('libavcodec'),
-  dependency('libavformat'), dependency('libavfilter'),
-  dependency('libavutil')]
+  dependency('gtkmm-3.0'), dependency('avcpp')]
 
 gnome = import('gnome')
 
@@ -15,7 +13,7 @@ resources = gnome.compile_resources(
 
 executable('mp3-to-m4b',
            'main.cc',
-           'get_duration.c',
+           'get_duration.cc',
            'converter_window.cc',
            'converter_treestore.cc',
            'converter_application.cc',

@@ -110,8 +110,7 @@ void ConverterWindow::on_add_file() {
   switch (result) {
     case (Gtk::ResponseType::RESPONSE_ACCEPT): {
       filename = dialog->get_filename();
-      const char *filename_c = filename.c_str();
-      length = get_audio_duration(filename_c);
+      length = get_audio_duration(filename);
       break;
     }
     default: {
