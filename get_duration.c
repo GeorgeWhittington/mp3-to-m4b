@@ -73,15 +73,15 @@ int open_input_file(const char *filename, int *duration) {
   // av_dump_format(input_format_ctx, 0, filename, 0);
 
   // Sourced from av_dump_format:
-  av_log(NULL, AV_LOG_INFO, "Duration in seconds: ");
+  // av_log(NULL, AV_LOG_INFO, "Duration in seconds: ");
   if (input_format_ctx->duration != AV_NOPTS_VALUE) {
     int seconds;
     int64_t duration_ms = input_format_ctx->duration + (input_format_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
     seconds = duration_ms / AV_TIME_BASE;
-    av_log(NULL, AV_LOG_INFO, "%d\n", seconds);
+    // av_log(NULL, AV_LOG_INFO, "%d\n", seconds);
     *duration = seconds;
   } else {
-    av_log(NULL, AV_LOG_INFO, "N/A\n");
+    // av_log(NULL, AV_LOG_INFO, "N/A\n");
     *duration = -1;
   }
 

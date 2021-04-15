@@ -139,17 +139,23 @@ void ConverterWindow::on_convert() {
 
 void ConverterWindow::on_set_cell_length(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter) {
   if (iter) {
+    Glib::ustring view_text;
     int seconds, hours, minutes;
     seconds = iter->get_value(tree_model->columns.length);
-    minutes = seconds / 60;
-    hours = minutes / 60;
 
-    // max int is 2147483647, so max time is 596523:14:07
-    char buffer[15];
-    sprintf(buffer, "%02d:%02d:%02d",
+    if (seconds == -1) {
+      view_text = "N/A";
+    } else {
+      minutes = seconds / 60;
+      hours = minutes / 60;
+
+      // max int is 2147483647, so max time is 596523:14:07
+      char buffer[15];
+      sprintf(buffer, "%02d:%02d:%02d",
             hours, int(minutes % 60), int(seconds % 60));
-    
-    Glib::ustring view_text = buffer;
+      view_text = buffer;
+    }
+
     Gtk::CellRendererText* text_renderer = static_cast<Gtk::CellRendererText*>(renderer);
     text_renderer->property_text() = view_text;
   }
