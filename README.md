@@ -1,5 +1,6 @@
 # mp3-to-m4b
-Gui to convert mp3 files to m4b audiobooks
+Gtk gui to convert mp3 files to m4b audiobooks
+(This is a project for university, so I'm distributing no binaries, and won't be updating any of the code.)
 
 ## Installing dependencies:
 Use the package manager of your choice (apt, brew, msys2's thing) and git+meson to install the following:

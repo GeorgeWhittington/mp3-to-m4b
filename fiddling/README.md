@@ -1,5 +1,3 @@
-Most of the stuff in this subfolder is example code pinched from tutorials/documentation for the libraries I've been using.
+Test contains some quick blocking out of how I'm doing the conversion in the actual application, did it in python first for speeds sake.
 
-Essentially, assume I didn't write it, cause despite some modifications 90% is other people's stuff.
-
-The code in the src directory is the only stuff I claim to have written wholesale :P
+ffmpeg stuff contains the WIP code to do the concatenation, conversion and metadata writing all in c++ using ffmpegs libraries. Halfway there, but couldn't get it fully functional in time.
