@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
     return 1;
   }
 
-  refBuilder->get_widget("test_window", pWindow);
+  refBuilder->get_widget("main_window", pWindow);
   if(pWindow) {
     Gtk::Button* pButton = nullptr;
     refBuilder->get_widget("enter_button", pButton);
@@ -33,10 +33,9 @@ int main (int argc, char *argv[]) {
       pButton->signal_clicked().connect( sigc::ptr_fun(on_button_clicked) );
     }
 
-    app->run(*pWindow);
+    return app->run(*pWindow);
   }
 
   delete pWindow;
-
   return 0;
 }
