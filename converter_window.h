@@ -20,7 +20,6 @@ class ConverterWindow : public Gtk::ApplicationWindow {
 
     Glib::RefPtr<Gtk::Builder> glade;
 
-    // widgets
     Gtk::TreeView* treeView;
     Glib::RefPtr<ConverterTreeStore> treeModel;
 };

@@ -1,6 +1,8 @@
 #include "converter_window.h"
 #include <iostream>
 
+// TODO: Fix all variables in camelcase! Just use underscores.
+
 ConverterWindow::ConverterWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refGlade)
 : Gtk::ApplicationWindow(cobject),
   glade(refGlade),
@@ -19,9 +21,15 @@ ConverterWindow::ConverterWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk
   treeView->set_model(treeModel);
   treeView->set_reorderable();
 
-  treeView->append_column_editable("Chapter Title", treeModel->columns.title);
+  int title_index = treeView->append_column_editable("Chapter Title", treeModel->columns.title);
   treeView->append_column("File Name", treeModel->columns.file_name);
   treeView->append_column("Length", treeModel->columns.length);
+
+  // ensure only rows that are chapters can have title edited
+  title_index -= 1;
+  Gtk::TreeViewColumn* title_column = treeView->get_column(title_index);
+  Gtk::CellRenderer* title_cell_renderer = treeView->get_column_cell_renderer(title_index);
+  title_column->add_attribute(*title_cell_renderer, "editable", treeModel->columns.chapter);
 
   show_all();
 }
