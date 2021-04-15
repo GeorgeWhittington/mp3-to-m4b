@@ -2,7 +2,7 @@
 Gui to convert mp3 files to m4b audiobooks
 
 ## Installing dependencies:
-Use the package manager of your choice (apt, brew, idk what windows folks have to suffer lol) and git+meson to install the following:
+Use the package manager of your choice (apt, brew, msys2's thing) and git+meson to install the following:
 1. [avcpp](https://github.com/h4tr3d/avcpp) == commit fe8847aa740aa4c2868c020c82d6765c8520c1a1
 2. gtkmm == v3.24.2
 3. adwaita-icon-theme == v3.38.0
