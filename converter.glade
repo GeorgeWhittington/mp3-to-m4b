@@ -89,8 +89,8 @@
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">never</property>
             <property name="shadow_type">in</property>
+            <property name="propagate_natural_width">True</property>
             <property name="propagate_natural_height">True</property>
             <child>
               <object class="GtkViewport">
@@ -178,7 +178,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="title_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                           </object>
@@ -189,7 +189,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="author_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                           </object>
@@ -200,7 +200,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="year_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                           </object>
@@ -211,7 +211,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="cover_image_button">
                             <property name="label" translatable="yes">Choose a file</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -232,7 +232,7 @@
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
-                            <property name="top_attach">4</property>
+                            <property name="top_attach">6</property>
                           </packing>
                         </child>
                         <child>
@@ -243,9 +243,40 @@
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
+                            <property name="top_attach">7</property>
+                            <property name="width">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage" id="cover_image_display">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="stock">gtk-missing-image</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
                             <property name="top_attach">5</property>
                             <property name="width">4</property>
                           </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Current Cover Art</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">4</property>
+                            <property name="width">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>
