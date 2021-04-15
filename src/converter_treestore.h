@@ -1,5 +1,7 @@
+#ifndef CONVERTER_TREESTORE
+#define CONVERTER_TREESTORE
+
 #include <gtkmm.h>
-#include <iostream>
 
 class ConverterTreeStore : public Gtk::TreeStore {
   protected:
@@ -40,3 +42,5 @@ class ConverterTreeStore : public Gtk::TreeStore {
       const Gtk::TreeModel::Path& dest,
       const Gtk::SelectionData& selection_data) const override;
 };
+
+#endif

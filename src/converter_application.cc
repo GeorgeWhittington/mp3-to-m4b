@@ -1,3 +1,6 @@
+#include <gtk.h>
+#include <gtkmm.h>
+
 #include "converter_application.h"
 
 ConverterApplication::ConverterApplication()
@@ -6,6 +9,7 @@ ConverterApplication::ConverterApplication()
 {
   glade->add_from_resource("/org/george/mp3_to_m4b/converter.glade");
   glade->add_from_resource("/org/george/mp3_to_m4b/menu.glade");
+  glade->add_from_resource("/org/george/mp3_to_m4b/conversion_dialog.glade");
 
   Glib::set_application_name("MP3 to M4B Converter");
 
@@ -32,7 +36,6 @@ void ConverterApplication::on_startup() {
 
   if (!app_menu) {
     std::cout << "Application menu not found" << std::endl;
-    g_warning("Application menu not found");
   } else {
     set_menubar(app_menu);
   }

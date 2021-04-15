@@ -1,9 +1,10 @@
-#include <iostream>
+#ifndef CONVERTER_WINDOW
+#define CONVERTER_WINDOW
 
 #include <gtkmm.h>
 
 #include "converter_treestore.h"
-#include "get_duration.h"
+#include "conversion_dialog.h"
 
 class ConverterWindow : public Gtk::ApplicationWindow {
   public:
@@ -39,5 +40,8 @@ class ConverterWindow : public Gtk::ApplicationWindow {
     Gtk::TreeView* tree_view;
     Glib::RefPtr<ConverterTreeStore> tree_model;
 
+    ConversionDialog* conversion_dialog;
     std::string cover_image_path;
 };
+
+#endif

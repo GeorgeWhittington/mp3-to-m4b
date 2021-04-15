@@ -1,3 +1,7 @@
+#include <iostream>
+
+#include <gtkmm.h>
+
 #include "converter_treestore.h"
 
 ConverterTreeStore::ConverterTreeStore() {

@@ -1,5 +1,10 @@
-#include <gtkmm.h>
+#ifndef CONVERTER_APPLICATION
+#define CONVERTER_APPLICATION
+
 #include <iostream>
+
+#include <gtkmm.h>
+
 #include "converter_window.h"
 
 class ConverterApplication : public Gtk::Application {
@@ -16,3 +21,5 @@ class ConverterApplication : public Gtk::Application {
 
     Glib::RefPtr<Gtk::Builder> glade;
 };
+
+#endif

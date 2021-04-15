@@ -1,4 +1,9 @@
+#include <iostream>
+
+#include <gtkmm.h>
+
 #include "converter_window.h"
+#include "get_duration.h"
 
 typedef unsigned int uint;
 
@@ -11,6 +16,7 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
   year_entry(nullptr),
   cover_image_button(nullptr),
   cover_image_display(nullptr),
+  conversion_dialog(nullptr),
   comment_text_view(nullptr)
 {
   // fetch all widgets
@@ -85,7 +91,7 @@ void ConverterWindow::on_add_chapter() {
 
 Gtk::TreeModel::Row ConverterWindow::add_chapter() {
   Gtk::TreeModel::Row row = *(tree_model->append());
-  auto children = tree_model->children();
+  Gtk::TreeModel::Children children = tree_model->children();
   row[tree_model->columns.chapter] = true;
   row[tree_model->columns.title] = "Chapter " + std::to_string(children.size());
   return row;
@@ -99,7 +105,7 @@ void ConverterWindow::on_add_file() {
     "Please choose an mp3", *this,
     Gtk::FILE_CHOOSER_ACTION_OPEN, "", "");
 
-  auto filter_audio = Gtk::FileFilter::create();
+  Glib::RefPtr<Gtk::FileFilter> filter_audio = Gtk::FileFilter::create();
   filter_audio->set_name("MP3 files");
   filter_audio->add_pattern("*.mp3"); // Can only pick files with mp3 extension
   dialog->add_filter(filter_audio);
@@ -117,8 +123,8 @@ void ConverterWindow::on_add_file() {
     }
   }
 
-  auto selection = tree_view->get_selection();
-  auto row = selection->get_selected();
+  Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
+  Gtk::TreeModel::iterator row = selection->get_selected();
 
   // If chapter selected, add the file under it
   if (row) {
@@ -134,7 +140,7 @@ void ConverterWindow::on_add_file() {
   }
 
   // Otherwise create a chapter to add under
-  auto chapter = add_chapter();
+  Gtk::TreeModel::Row chapter = add_chapter();
   Gtk::TreeModel::Row file_row = *(tree_model->append(chapter.children()));
   file_row[tree_model->columns.chapter] = false;
   file_row[tree_model->columns.file_name] = filename;
@@ -142,14 +148,15 @@ void ConverterWindow::on_add_file() {
 }
 
 void ConverterWindow::on_remove_row() {
-  auto selection = tree_view->get_selection();
-  auto row = selection->get_selected();
+  Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
+  Gtk::TreeModel::iterator row = selection->get_selected();
   if (row) {
     tree_model->erase(row);
   } 
 }
 
 void ConverterWindow::on_convert() {
+  // LOGGING
   std::cout << "--- Metadata ---" << std::endl;
   std::cout << "Title: " << title_entry->get_text() << std::endl;
   std::cout << "Author: " << author_entry->get_text() << std::endl;
@@ -158,19 +165,52 @@ void ConverterWindow::on_convert() {
   std::cout << "Comment: " << comment_text_view->get_buffer()->get_text() << std::endl;
 
   std::cout << "--- Chapters ---" << std::endl;
-  auto chapters = tree_model->children();
+  Gtk::TreeModel::Children chapters = tree_model->children();
 
   for (uint i = 0; i < chapters.size(); i++) {
     std::cout << i << ": " << chapters[i].get_value(tree_model->columns.title) << std::endl;
 
-    auto files = chapters[i].children();
+    Gtk::TreeNodeChildren files = chapters[i].children();
 
     for (uint j = 0; j < files.size(); j++) {
       std::cout << "    " << j << ": " << files[j].get_value(tree_model->columns.file_name);
       std::cout << " " << files[j].get_value(tree_model->columns.length) << std::endl;
     }
   }
+  // LOGGING
 
+  if (conversion_dialog) {
+    std::cerr << "Conversion already in progress" << std::endl;
+    return;
+  }
+
+  ConversionData conversion_data;
+
+  conversion_data.title = title_entry->get_text();
+  conversion_data.author = author_entry->get_text();
+  conversion_data.year = year_entry->get_text();
+  conversion_data.cover_image_path = cover_image_path;
+  conversion_data.comment = comment_text_view->get_buffer()->get_text();
+
+  for (uint i = 0; i < chapters.size(); i++) {
+    std::string title = chapters[i].get_value(tree_model->columns.title);
+    std::vector<std::string> file_names;
+
+    Gtk::TreeNodeChildren files = chapters[i].children();
+    for (uint j = 0; j < files.size(); j++) {
+      file_names.push_back(files[j].get_value(tree_model->columns.file_name));
+    }
+
+    conversion_data.chapters.push_back(ChapterData(title, file_names));
+  }
+
+  glade->get_widget_derived("conversion_dialog", conversion_dialog, &conversion_data);
+  conversion_dialog->run();
+
+  delete conversion_dialog;
+  conversion_dialog = nullptr;
+
+  // check there are no existing worker threads, don't want multiple conversions at once
   // create worker thread (std::thread), communicate with it via Glib::Dispatcher
   // inside worker thread, begin external ffmpeg and then AtomicParsley processes
   // (will have to decide if boost::processes is still worth using for cleanliness's sake)
@@ -227,7 +267,7 @@ void ConverterWindow::on_cover_image_button_clicked() {
     Gtk::FILE_CHOOSER_ACTION_OPEN, "", "");
 
   // Only allow picking jpeg, png or gif images
-  auto filter_image = Gtk::FileFilter::create();
+  Glib::RefPtr<Gtk::FileFilter> filter_image = Gtk::FileFilter::create();
   filter_image->set_name("Images");
   filter_image->add_pattern("*.jpeg");
   filter_image->add_pattern("*.jpg");
@@ -310,15 +350,15 @@ void ConverterWindow::on_about() {
 // TODO: Implement these two
 
 void ConverterWindow::on_move_up() {
-  auto selection = tree_view->get_selection();
-  auto row = selection->get_selected();
+  Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
+  Gtk::TreeModel::iterator row = selection->get_selected();
   if (row) {
   }
 }
 
 void ConverterWindow::on_move_down() {
-  auto selection = tree_view->get_selection();
-  auto row = selection->get_selected();
+  Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
+  Gtk::TreeModel::iterator row = selection->get_selected();
   if (row) {
   }
 }
