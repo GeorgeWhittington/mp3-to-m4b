@@ -21,15 +21,15 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
   // dest is the path the dragged row would have when dropped,
   // so comparisons need to be made against it's parent
   
-  // get path of row being dragged
   auto ref_this = Glib::RefPtr<Gtk::TreeModel>(const_cast<ConverterTreeStore*>(this));
   ref_this->reference();
+  auto unconst_this = const_cast<ConverterTreeStore*>(this);
+
   Gtk::TreeModel::Path dragged_row;
   Gtk::TreeModel::Path::get_from_selection_data(selection_data, ref_this, dragged_row);
   
   // compare dragged row to dest parent
   if (dest && dragged_row) {
-    auto unconst_this = const_cast<ConverterTreeStore*>(this);
     const_iterator iter_dragged = unconst_this->get_iter(dragged_row);
     bool dragged_is_chapter = iter_dragged->get_value(columns.chapter);
 
@@ -41,17 +41,15 @@ bool ConverterTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& des
       // chapters can be dragged to top level only
       return dest_top_level;
     } else {
-      // files can be dragged to chapter only
+      // files can be dragged to second level only
       if (dest_top_level) {
         return false;
       }
 
       // get dest parent row
       const_iterator iter_dest_parent = unconst_this->get_iter(dest_parent);
-      if (iter_dest_parent) {
-        bool dest_is_chapter = iter_dest_parent->get_value(columns.chapter);
-        return dest_is_chapter;
-      }
+      if (iter_dest_parent)
+        return iter_dest_parent->get_value(columns.chapter);
     }
   }
 

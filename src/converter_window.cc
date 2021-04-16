@@ -90,7 +90,8 @@ ConverterWindow::ConverterWindow(BaseObjectType* c_object, const Glib::RefPtr<Gt
 }
 
 ConverterWindow::~ConverterWindow() {
-  conversion_dialog->worker->clear_temp_files();
+  if (conversion_dialog->worker)
+    conversion_dialog->worker->clear_temp_files();
 }
 
 void ConverterWindow::on_add_chapter() {
@@ -138,7 +139,6 @@ void ConverterWindow::on_add_file() {
   if (row) {
     bool chapter = row->get_value(tree_model->columns.chapter);
     if (chapter) {
-
       Gtk::TreeModel::Row file_row = *(tree_model->append(row->children()));
       file_row[tree_model->columns.chapter] = false;
       file_row[tree_model->columns.file_name] = filename;
@@ -401,18 +401,78 @@ void ConverterWindow::on_about() {
   dialog.run();
 }
 
-// TODO: Implement these two
-
 void ConverterWindow::on_move_up() {
+  Gtk::TreeModel::iterator iter_swap;
+
+  // Get iterator of selected row
   Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
-  Gtk::TreeModel::iterator row = selection->get_selected();
-  if (row) {
+  Gtk::TreeModel::iterator iter_selected = selection->get_selected();
+  if (!iter_selected)
+    return;  // Nothing selected
+
+  // Convert iter to path, try to move to prev node at this depth
+  Gtk::TreeModel::Path path_swap = tree_model->get_path(iter_selected);
+  bool exists = path_swap.prev();
+  if (exists) {
+    iter_swap = tree_model->get_iter(path_swap);
+    if (iter_swap)
+      tree_model->iter_swap(iter_selected, iter_swap);
+    
+    return;
   }
+
+  // No prev node, search up tree
+  exists = path_swap.up();
+  if (!exists)
+    return;  // Selection was chapter
+
+  exists = path_swap.prev();
+  if (!exists)
+    return;  // No previous chapter to add a file under
+
+  // create new child of chapter and delete old row
+  iter_swap = tree_model->get_iter(path_swap);
+  Gtk::TreeStore::Row new_row = *(tree_model->append(iter_swap->children()));
+  new_row[tree_model->columns.chapter] = false;
+  new_row[tree_model->columns.file_name] = iter_selected->get_value(tree_model->columns.file_name);
+  new_row[tree_model->columns.length] = iter_selected->get_value(tree_model->columns.length);
+
+  tree_model->erase(iter_selected);
 }
 
 void ConverterWindow::on_move_down() {
+    Gtk::TreeModel::iterator iter_swap;
+
+  // Get iterator of selected row
   Glib::RefPtr<Gtk::TreeSelection> selection = tree_view->get_selection();
-  Gtk::TreeModel::iterator row = selection->get_selected();
-  if (row) {
+  Gtk::TreeModel::iterator iter_selected = selection->get_selected();
+  if (!iter_selected)
+    return;  // Nothing selected
+
+  // Convert iter to path, try to move to next node at this depth
+  Gtk::TreeModel::Path path_swap = tree_model->get_path(iter_selected);
+  path_swap.next();
+  iter_swap = tree_model->get_iter(path_swap);
+  if (iter_swap) {
+    tree_model->iter_swap(iter_selected, iter_swap);
+    return;
   }
+
+  // No next node, search down tree
+  bool exists = path_swap.up();
+  if (!exists)
+    return;  // Selection was chapter
+
+  path_swap.next();
+  iter_swap = tree_model->get_iter(path_swap);
+  if (!iter_swap)
+    return;  // No next chapter to add a file under
+
+  // create new child of chapter and delete old row
+  Gtk::TreeStore::Row new_row = *(tree_model->prepend(iter_swap->children()));
+  new_row[tree_model->columns.chapter] = false;
+  new_row[tree_model->columns.file_name] = iter_selected->get_value(tree_model->columns.file_name);
+  new_row[tree_model->columns.length] = iter_selected->get_value(tree_model->columns.length);
+
+  tree_model->erase(iter_selected);
 }

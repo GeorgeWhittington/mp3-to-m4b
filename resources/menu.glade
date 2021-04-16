@@ -29,6 +29,20 @@
       </section>
       <section>
         <item>
+          <attribute name='label' translatable='yes'>Move Row Up</attribute>
+          <attribute name='action'>win.move-up</attribute>
+          <attribute name='accel'>&lt;Primary&gt;Up</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Move Row Down</attribute>
+          <attribute name='action'>win.move-down</attribute>
+          <attribute name='accel'>&lt;Primary&gt;Down</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
           <attribute name='label' translatable='yes'>Remove Row</attribute>
           <attribute name='action'>win.remove-row</attribute>
           <attribute name='accel'>&lt;Primary&gt;d</attribute>

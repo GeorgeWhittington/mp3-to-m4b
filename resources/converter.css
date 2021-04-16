@@ -103,9 +103,11 @@ dialog expander arrow {
   color: #EBEBEE;
 }
 
+dialog viewport {
+  background-color: #153D67;
+}
+
 /* TODO:
-1. fix the textview menu, it's white on white rn
-2. figure out adding some internal padding to the textview
-3. change the overshoot gradient thingy colour
-4. sort this file
+1. change the overshoot gradient thingy colour
+2. sort this file
 */
